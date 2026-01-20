@@ -9,6 +9,7 @@ export interface NewsItem {
     link: string;
     time: string;
     category: string;
+    pubDate: number; // Added for sorting
 }
 
 const CATEGORIES = {
@@ -82,9 +83,13 @@ async function fetchCategoryNews(key: string, config: any): Promise<NewsItem[]> 
                 source,
                 link: item.link[0],
                 time: pubDate.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' }),
-                category: config.name
+                category: config.name,
+                pubDate: pubDate.getTime() // Add timestamp for sorting
             });
         }
+
+        // Sort by date descending (Newest first) to prioritize news within 6 hours
+        newsItems.sort((a, b) => b.pubDate - a.pubDate);
 
         return newsItems.slice(0, config.limit);
     } catch (error) {

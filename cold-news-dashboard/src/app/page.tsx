@@ -92,7 +92,7 @@ export default function Dashboard() {
             </section>
 
             <div className="text-center text-slate-600 text-sm font-mono mt-20 pt-10 border-t border-slate-800">
-              Sources: CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News • Data exclusions {'>'} 24h
+              Sources: CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News • Priority &lt; 6h • Excludes {'>'} 24h
             </div>
           </>
         ) : (
