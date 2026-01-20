@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 全球財經即時戰情室</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Icon Set -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="glass-header">
+            <div class="logo-area">
+                <i data-lucide="activity" class="logo-icon"></i>
+                <h1>全球財經戰情室 <span class="date">2026.01.20</span></h1>
+            </div>
+            <div class="actions-area">
+                <button class="refresh-btn" onclick="window.location.reload()">
+                    <i data-lucide="refresh-cw"></i> 重新查詢
+                </button>
+                <div class="status-indicator">
+                    <span class="pulse"></span> LIVE
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            <!-- 1. 美國財經焦點 (10) -->
+            <section class="news-category" id="us-finance">
+                <div class="category-header">
+                    <i data-lucide="dollar-sign" class="category-icon"></i>
+                    <h2>美國財經焦點</h2>
+                </div>
+                <div class="news-list">
+                    <article class="news-item">
+                        <div class="news-source">Morningstar</div>
+                        <h3>聯準會 2026 降息路徑</h3>
+                        <p>預計今年將降息 1-2 次，年中聯邦基金利率目標區間或降至 3.0%-3.25%。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Forbes</div>
+                        <h3>鮑爾任期將屆 引發政策不確定性</h3>
+                        <p>鮑爾主席任期將於 2026 年 5 月結束，Kevin Hassett 被視為潛在繼任者，市場關注政策延續性。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">KPMG</div>
+                        <h3>通膨黏著度仍高</h3>
+                        <p>通膨預期將持續高於 2% 目標，長期抗通膨仍是 2026 重點。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">JPMorgan</div>
+                        <h3>勞動市場降溫訊號</h3>
+                        <p>12 月失業率降至 4.4%，勞動市場雖然冷卻但仍具韌性，緩解了急迫降息的壓力。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Trading Economics</div>
+                        <h3>10年期美債殖利率反彈</h3>
+                        <p>殖利率攀升至 4.27%，殖利率曲線預期將持續陡峭化。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Schwab</div>
+                        <h3>債市回報展望轉趨溫和</h3>
+                        <p>預期 2026 年債券回報將不如 2025 年強勁，隨著降息循環尾聲，價格壓力可能浮現。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Morningstar</div>
+                        <h3>美股板塊輪動：小型股出頭</h3>
+                        <p>2026 初小型股表現優於大型股，科技股因前期漲多暫顯疲態。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">JPMorgan</div>
+                        <h3>S&P 500 全年展望樂觀</h3>
+                        <p>受惠強勁企業獲利支撐，摩根大通預測 S&P 500 今年將上漲 11%。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Forbes</div>
+                        <h3>AI 資本支出持續增長</h3>
+                        <p>儘管短期股價波動，企業對 AI 的鉅額投資仍是支撐長期成長的關鍵動力。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Forbes</div>
+                        <h3>市場潛在風險警示</h3>
+                        <p>高估值修正與潛在衰退風險，仍是投資人今年不可忽視的隱憂。</p>
+                    </article>
+                </div>
+            </section>
+
+            <!-- 2. 國際財經視野 (10) -->
+            <section class="news-category" id="global-finance">
+                <div class="category-header">
+                    <i data-lucide="globe" class="category-icon"></i>
+                    <h2>國際財經視野</h2>
+                </div>
+                <div class="news-list">
+                    <article class="news-item">
+                        <div class="news-source">Asia News</div>
+                        <h3>中國 GDP 成功保五</h3>
+                        <p>2025 年中國經濟成長率達 5%，為 2026 年經濟發展奠定穩定基礎。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Global Times</div>
+                        <h3>中國發布消費刺激計畫</h3>
+                        <p>針對 2026-2030 年提出新政策，致力解決供需失衡，強化國內消費力道。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">FX Leaders</div>
+                        <h3>7兆美元存款解鎖</h3>
+                        <p>隨著利率走低，中國家庭鉅額定存到期，資金可能流向股市與黃金市場。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">The Guardian</div>
+                        <h3>歐美貿易戰火重燃</h3>
+                        <p>川普威脅 2 月 1 日起對歐洲進口商品加徵 10-25% 關稅，歐股聞聲下挫。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">News4Jax</div>
+                        <h3>歐洲主要股市全倒</h3>
+                        <p>受關稅威脅衝擊，德國 DAX、法國 CAC 40 及英國 FTSE 100 指數全面收黑。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Morningstar</div>
+                        <h3>歐盟研擬報復清單</h3>
+                        <p>歐盟正考慮對價值 930 億歐元的美國商品加徵報復性關稅。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Japan Times</div>
+                        <h3>日債殖利率創 30 年新高</h3>
+                        <p>日本 40 年期公債殖利率觸及 4%，反映市場對財政惡化的擔憂。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Edge Singapore</div>
+                        <h3>日本政局動盪</h3>
+                        <p>首相高市早苗宣布 2 月 8 日提前大選，稅改議題成為攻防焦點。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">ShareCafe</div>
+                        <h3>日銀升息箭在弦上</h3>
+                        <p>若日圓持續疲軟，日銀今年可能升息三次，目標利率上看 1%。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">ShareCafe</div>
+                        <h3>新興市場貨幣遭降評</h3>
+                        <p>摩根大通將新興市場貨幣評級降至「中立」，示警超買風險。</p>
+                    </article>
+                </div>
+            </section>
+
+            <!-- 3. 全球地緣政治 (5) -->
+            <section class="news-category" id="geopolitics">
+                <div class="category-header">
+                    <i data-lucide="land-plot" class="category-icon"></i>
+                    <h2>全球地緣政治</h2>
+                </div>
+                <div class="news-list">
+                    <article class="news-item">
+                        <div class="news-source">Kyiv Independent</div>
+                        <h3>烏俄戰事升級 能源告急</h3>
+                        <p>俄軍加強對基輔飛彈攻勢，烏克蘭能源設施受創，澤倫斯基警告大規模攻勢將至。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Eurasia Review</div>
+                        <h3>伊朗爆發城市戰</h3>
+                        <p>議長承認國內爆發「城市戰爭」，達沃斯論壇因此撤回對伊朗外長的邀請。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Arab News</div>
+                        <h3>達沃斯論壇：美國優先再起</h3>
+                        <p>今年 WEF 聚焦川普「美國優先」政策與全球穩定的拉鋸戰。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Taipei Times</div>
+                        <h3>美台簽署重大貿易協定</h3>
+                        <p>台灣半導體廠承諾在美投資 2500 億美元，換取關稅減免與戰略合作。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Hindustan Times</div>
+                        <h3>IMF 示警 AI 泡沫</h3>
+                        <p>IMF 調升 2026 全球成長預測，但警告 AI 泡沫與地緣政治仍是最大威脅。</p>
+                    </article>
+                </div>
+            </section>
+
+            <!-- 4. 台灣財經要聞 (10) -->
+            <section class="news-category" id="taiwan-finance">
+                <div class="category-header">
+                    <i data-lucide="trending-up" class="category-icon"></i>
+                    <h2>台灣財經要聞</h2>
+                </div>
+                <div class="news-list">
+                    <article class="news-item">
+                        <div class="news-source">Focus Taiwan</div>
+                        <h3>台股逆勢創歷史新高</h3>
+                        <p>無視亞股普遍疲弱，加權指數收盤再創歷史新高，展現強勁韌性。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">MoneyWeek</div>
+                        <h3>台積電財報亮眼</h3>
+                        <p>Q4 淨利大增 35%，營收達 337 億美元優於預期，基本面強勁。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Seeking Alpha</div>
+                        <h3>AI 需求展望樂觀</h3>
+                        <p>台積電預估至 2029 年，AI 相關需求年複合成長率將達 55-59%。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Fool.com</div>
+                        <h3>台積電擴大資本支出</h3>
+                        <p>2026 年資本支出預算達 520-560 億美元，八成鎖定先進製程。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Fool.com</div>
+                        <h3>市值挑戰 2 兆美元</h3>
+                        <p>分析師看好台積電在 AI 基礎建設的關鍵地位，預測今年市值可望突破 2 兆美元。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">ElectronicsB2B</div>
+                        <h3>半導體赴美投資承諾</h3>
+                        <p>配合美台新協議，台灣供應鏈承諾在美擴大投資，強化技術戰略夥伴關係。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">DevDiscourse</div>
+                        <h3>對美出口關稅調降</h3>
+                        <p>美國承諾將台灣進口商品的一般關稅從 20% 降至 15%，有利出口競爭力。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Asia Business</div>
+                        <h3>力積電出售廠房</h3>
+                        <p>力積電以 18 億美元出售銅鑼廠予美光，帶動記憶體族群股價上揚。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Asia Business</div>
+                        <h3>鴻海與台達電回檔</h3>
+                        <p>相較於半導體強勢，鴻海與台達電股價表現相對疲弱，呈現兩樣情。</p>
+                    </article>
+                    <article class="news-item">
+                        <div class="news-source">Taiwan News</div>
+                        <h3>矽盾地位依然穩固</h3>
+                        <p>專家分析，儘管簽署新協議，美國對台灣先進晶片的依賴短期內難以取代。</p>
+                    </article>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Data Aggregated from CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News, CNA, BBC</p>
+            <p class="crypto-ticker">BTC: $98,420 | ETH: $3,210 | DXY: 104.25</p>
+        </footer>
+    </div>
+    <script>
+        // Enhance news items with AI Search Button
+        document.addEventListener('DOMContentLoaded', () => {
+            const newsItems = document.querySelectorAll('.news-item');
+
+            newsItems.forEach(item => {
+                const sourceEl = item.querySelector('.news-source');
+                const title = item.querySelector('h3').innerText;
+                const parent = sourceEl.parentNode;
+
+                // Create Header Wrapper
+                const header = document.createElement('div');
+                header.className = 'item-header';
+
+                // Move source into header
+                parent.insertBefore(header, sourceEl);
+                header.appendChild(sourceEl);
+
+                // Create AI Button
+                const btn = document.createElement('button');
+                btn.className = 'ai-btn';
+                btn.title = '使用 Gemini 進行深度分析';
+                btn.innerHTML = '<i data-lucide="sparkles"></i>';
+
+                // Click Event
+                btn.onclick = (e) => {
+                    e.stopPropagation(); // Prevent card click if any
+                    // Construct a query that triggers AI Overview effectively
+                    const query = `深入分析以下新聞事件重點與影響：${title}`;
+                    const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                    window.open(url, '_blank');
+                };
+
+                header.appendChild(btn);
+            });
+
+            lucide.createIcons();
+        });
+    </script>
+</body>
+
+</html>
