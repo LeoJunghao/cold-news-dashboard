@@ -40,7 +40,7 @@ async function fetchCategoryNews(key: string, config: any): Promise<NewsItem[]> 
     const url = `https://news.google.com/rss/search?q=${encodedQuery}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant`;
 
     try {
-        const res = await fetch(url, { next: { revalidate: 60 } }); // Cache for 1 min
+        const res = await fetch(url, { cache: 'no-store' });
         const text = await res.text();
         const result = await parseStringPromise(text);
 
