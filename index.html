@@ -23,7 +23,7 @@
                 <h1>全球財經戰情室 <span class="date">2026.01.20</span></h1>
             </div>
             <div class="actions-area">
-                <button class="refresh-btn" onclick="window.location.reload()">
+                <button class="refresh-btn" onclick="performLiveSearch()">
                     <i data-lucide="refresh-cw"></i> 重新查詢
                 </button>
                 <div class="status-indicator">
@@ -292,6 +292,39 @@
 
             lucide.createIcons();
         });
+
+        function performLiveSearch() {
+            const btn = document.querySelector('.refresh-btn');
+            const icon = btn.querySelector('i');
+            const originalText = btn.innerHTML; // Store original content if needed
+
+            // Add loading state
+            icon.classList.add('spin-anim');
+            btn.style.opacity = '0.7';
+
+            // Simulate processing delay then open search
+            setTimeout(() => {
+                // Construct a comprehensive query for the topics
+                const query = 'US Stock Market OR Taiwan Semiconductor OR Global Geopolitics OR International Finance News when:1d';
+                const url = `https://www.google.com/search?q=${encodeURIComponent(query)}&tbm=nws`;
+
+                window.open(url, '_blank');
+
+                // Update timestamp
+                const now = new Date();
+                const timeString = now.getFullYear() + '.' +
+                    String(now.getMonth() + 1).padStart(2, '0') + '.' +
+                    String(now.getDate()).padStart(2, '0') + ' ' +
+                    String(now.getHours()).padStart(2, '0') + ':' +
+                    String(now.getMinutes()).padStart(2, '0');
+
+                document.querySelector('h1 .date').textContent = timeString;
+
+                // Reset state
+                icon.classList.remove('spin-anim');
+                btn.style.opacity = '1';
+            }, 800);
+        }
     </script>
 </body>
 
