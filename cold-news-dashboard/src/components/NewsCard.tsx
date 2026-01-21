@@ -17,9 +17,7 @@ export function NewsCard({ item }: { item: NewsItem }) {
                 </h3>
             </div>
 
-            <p className="text-slate-400 text-sm mb-4 line-clamp-3 leading-relaxed">
-                {item.summary}
-            </p>
+
 
             <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-700/50">
                 <span className="text-xs text-slate-500 font-medium bg-slate-800/50 px-2 py-1 rounded">

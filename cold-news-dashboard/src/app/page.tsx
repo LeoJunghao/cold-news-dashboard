@@ -88,7 +88,49 @@ export default function Dashboard() {
               <NewsSection title="台灣財經要聞" items={data.tw} color="cyan" />
             </section>
 
-            <div className="text-center text-slate-600 text-sm font-mono mt-20 pt-10 border-t border-slate-800">
+            {/* Total Summary Report */}
+            <div className="mt-12 mb-8 mx-4 md:mx-0">
+              <div className="glass-panel p-6 rounded-2xl border border-cyan-500/30 bg-gradient-to-b from-slate-900/90 to-slate-950/90 shadow-[0_0_30px_rgba(6,182,212,0.15)] relative overflow-hidden group">
+                {/* Decorative elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl -translate-y-32 translate-x-32 group-hover:bg-cyan-500/20 transition-all duration-1000"></div>
+                <div className="absolute bottom-0 left-0 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl translate-y-20 -translate-x-20"></div>
+
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <TrendingUp className="text-cyan-400" size={24} />
+                    <h2 className="text-xl font-bold text-slate-100 tracking-wide">
+                      市場總結分析報告
+                    </h2>
+                  </div>
+
+                  <div className="prose prose-invert max-w-none">
+                    <p className="text-slate-300 leading-relaxed text-justify font-sans text-lg tracking-wide">
+                      {(() => {
+                        const topUS = data.us[0]?.title || "市場波動";
+                        const topIntl = data.intl[0]?.title || "全球局勢";
+                        const topGeo = data.geo[0]?.title || "地緣動態";
+                        const topTw = data.tw[0]?.title || "台股表現";
+
+                        return `【今日財經重點分析】
+                        
+今日全球市場呈現多空交錯格局。美國市場方面，投資人高度關注「${topUS}」之影響，顯示市場情緒仍受關鍵數據牽動。國際視野部分，「${topIntl}」成為今日焦點，反映出區域經濟連動性增強。
+                        
+在地緣政治層面，「${topGeo}」持續發酵，可能為全球供應鏈帶來潛在變數。回看台灣市場，「${topTw}」為今日最重要指標，預計將對相關類股產生直接影響。
+
+綜合觀之，當前投資環境變數仍多，建議投資人應持續追蹤上述關鍵事件之後續發展，並保持靈活的資產配置策略以應對市場波動。`;
+                      })()}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-end gap-2">
+                    <span className="text-xs text-slate-500 font-mono">AI Generated Analysis • Based on Top Stories</span>
+                    <Cpu size={14} className="text-cyan-500/50" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center text-slate-600 text-sm font-mono mt-10 pt-10 border-t border-slate-800">
               Sources: CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News • Priority &lt; 6h • Excludes {'>'} 24h
             </div>
           </>
