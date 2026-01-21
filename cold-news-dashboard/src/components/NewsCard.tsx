@@ -12,12 +12,9 @@ export function NewsCard({ item }: { item: NewsItem }) {
     return (
         <div className="glass-panel p-4 rounded-xl transition-all hover:scale-[1.02] hover:shadow-cyan-500/10 group">
             <div className="flex justify-between items-start gap-4">
-                <h3 className="font-semibold text-lg text-slate-100 leading-tight mb-2 group-hover:text-cyan-400 transition-colors">
+                <h3 className="font-semibold text-base text-slate-100 leading-tight mb-2 group-hover:text-cyan-400 transition-colors">
                     {item.title}
                 </h3>
-                <span className="text-xs font-mono text-cyan-500 whitespace-nowrap px-2 py-1 rounded bg-cyan-950/30 border border-cyan-500/20">
-                    {item.time}
-                </span>
             </div>
 
             <p className="text-slate-400 text-sm mb-4 line-clamp-3 leading-relaxed">

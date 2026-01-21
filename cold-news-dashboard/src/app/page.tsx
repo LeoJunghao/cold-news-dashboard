@@ -34,43 +34,40 @@ export default function Dashboard() {
     fetchData();
   }, []); // Initial load
 
-  const currentTime = lastUpdated ? lastUpdated.toLocaleTimeString('zh-TW') : '--:--:--';
+
 
   return (
     <main className="min-h-screen p-4 md:p-8 bg-[#050b14] text-slate-200">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 px-6 py-4 flex flex-col md:flex-row justify-between items-center shadow-2xl backdrop-blur-xl bg-slate-900/80">
-        <div className="flex items-center gap-3 mb-4 md:mb-0">
-          <div className="p-2 rounded-lg bg-cyan-950/50 border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-            <Zap className="text-cyan-400" size={24} />
+      <header className="sticky top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 px-6 py-3 flex flex-row justify-between items-center shadow-lg backdrop-blur-xl bg-slate-900/90">
+        <div className="flex items-center gap-3">
+          <div className="p-1.5 rounded-lg bg-cyan-950/50 border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.1)]">
+            <Zap className="text-cyan-400" size={20} />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500 neon-text tracking-tight">
-              COLDNEWS <span className="font-thin text-white">DASHBOARD</span>
+          <div className="flex flex-col">
+            <h1 className="text-lg font-bold text-slate-100 tracking-tight">
+              即時財經新聞摘要
             </h1>
-            <p className="text-xs text-slate-500 font-mono tracking-widest uppercase">Real-time Intellgience</p>
+            <p className="text-[10px] text-slate-500 font-mono tracking-wider">
+              {lastUpdated ? lastUpdated.toLocaleString('zh-TW', { hour12: false }) : 'Waiting for sync...'}
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className="text-right hidden md:block">
-            <div className="text-xs text-slate-500 uppercase tracking-wider">System Time</div>
-            <div className="font-mono text-cyan-400 text-lg tabular-nums">{currentTime}</div>
-          </div>
-
+        <div className="flex items-center gap-4">
           <button
             onClick={fetchData}
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-2.5 bg-cyan-600/10 hover:bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
+            className="flex items-center gap-2 px-4 py-2 bg-cyan-600/10 hover:bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
           >
-            <RefreshCw size={18} className={`transition-transform duration-700 ${loading ? 'animate-spin' : 'group-hover:rotate-180'}`} />
-            <span className="font-medium tracking-wide">{loading ? 'SYNCING...' : 'REFRESH'}</span>
+            <RefreshCw size={16} className={`transition-transform duration-700 ${loading ? 'animate-spin' : 'group-hover:rotate-180'}`} />
+            <span className="text-sm font-medium tracking-wide hidden sm:inline">{loading ? 'SYNCING...' : 'REFRESH'}</span>
           </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto mt-32 space-y-12 pb-20">
+      <div className="max-w-7xl mx-auto mt-6 space-y-8 pb-12">
         {!data && loading ? (
           <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
             <div className="w-12 h-12 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
