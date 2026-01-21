@@ -104,20 +104,18 @@ export default function Dashboard() {
                   </div>
 
                   <div className="prose prose-invert max-w-none">
-                    <p className="text-slate-300 leading-relaxed text-justify font-sans text-lg tracking-wide">
+                    <p className="text-slate-300 leading-relaxed text-justify font-sans text-sm tracking-wide">
                       {(() => {
                         const topUS = data.us[0]?.title || "市場波動";
                         const topIntl = data.intl[0]?.title || "全球局勢";
                         const topGeo = data.geo[0]?.title || "地緣動態";
                         const topTw = data.tw[0]?.title || "台股表現";
 
-                        return `【今日財經重點分析】
-                        
-今日全球市場呈現多空交錯格局。美國市場方面，投資人高度關注「${topUS}」之影響，顯示市場情緒仍受關鍵數據牽動。國際視野部分，「${topIntl}」成為今日焦點，反映出區域經濟連動性增強。
-                        
-在地緣政治層面，「${topGeo}」持續發酵，可能為全球供應鏈帶來潛在變數。回看台灣市場，「${topTw}」為今日最重要指標，預計將對相關類股產生直接影響。
+                        return `市場分析報告顯示，今日全球金融體系持續受到多重宏觀因素交互影響，投資氛圍呈現謹慎觀望。首要焦點集中於美國市場，「${topUS}」消息一出即引發市場關注，顯示核心經濟指標仍是左右資金流向的關鍵。
 
-綜合觀之，當前投資環境變數仍多，建議投資人應持續追蹤上述關鍵事件之後續發展，並保持靈活的資產配置策略以應對市場波動。`;
+在國際板塊方面，「${topIntl}」亦成為重要風向球，突顯出全球經濟體之間高度連動的特性，任何區域性的波動皆可能引發連鎖效應。此外，地緣政治風險未曾消退，「${topGeo}」局勢發展仍具不確定性，恐對大宗商品及避險資產價格造成潛在波動。
+
+回歸台灣市場，「${topTw}」議題直接牽動產業鏈敏感神經，預期將對相關權值股及整體大盤走勢產生實質影響。綜合評估，當前市場變數錯綜複雜，短線操作宜轉趨保守。建議投資人應密切監控上述關鍵事件之後續效應，並適度調控資金部位，採取多元配置策略以有效分散非系統性風險。`;
                       })()}
                     </p>
                   </div>
