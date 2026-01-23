@@ -16,10 +16,14 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = async (isForceRefresh = false) => {
     setLoading(true);
+    if (isForceRefresh) {
+      setData(null); // Clear data to show full loading state
+    }
     try {
-      const res = await fetch(`/api/news?t=${Date.now()}`, { cache: 'no-store' });
+      const forceQuery = isForceRefresh ? '&force=true' : '';
+      const res = await fetch(`/api/news?t=${Date.now()}${forceQuery}`, { cache: 'no-store' });
       const json = await res.json();
       setData(json);
       setLastUpdated(new Date());
@@ -31,7 +35,7 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(false);
   }, []); // Initial load
 
 
@@ -56,7 +60,7 @@ export default function Dashboard() {
 
         <div className="flex items-center gap-4">
           <button
-            onClick={fetchData}
+            onClick={() => fetchData(true)}
             disabled={loading}
             className="flex items-center gap-2 px-4 py-2 bg-cyan-600/10 hover:bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
           >

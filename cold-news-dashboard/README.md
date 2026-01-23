@@ -9,14 +9,10 @@ A real-time, cold-light style news dashboard tracking US Finance, International 
 - **Gemini Integration**: One-click analysis of news items using Google Gemini.
 
 ## Data Sources
-Aggregated via Google News from:
-- CNN Business
-- CNBC
-- Anue (鉅亨網)
-- Yahoo Finance
-- WSJ
-- CNA (中央社)
-- BBC News
+Aggregated via a hybrid engine combining Google News RSS and direct feeds from:
+- **US/Global**: CNBC, Wall Street Journal, Yahoo Finance, MarketWatch
+- **Taiwan**: Central News Agency (CNA), Economic Daily News (UDN), United Daily News
+- **Aggregator**: Google News (fallback & broad topic coverage)
 
 ## Tech Stack
 - Next.js 15 (App Router)
