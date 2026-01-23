@@ -10,9 +10,10 @@ A real-time, cold-light style news dashboard tracking US Finance, International 
 
 ## Data Sources
 Aggregated via a hybrid engine combining Google News RSS and direct feeds from:
-- **US/Global**: CNBC, Wall Street Journal, Yahoo Finance, MarketWatch
-- **Taiwan**: Central News Agency (CNA), Economic Daily News (UDN), United Daily News
-- **Aggregator**: Google News (fallback & broad topic coverage)
+- **US/Global**: Yahoo Finance Taiwan (Intl), Google News (Chinese Aggregation)
+- **Taiwan**: Central News Agency (CNA), Economic Daily News (UDN)
+- **Crypto**: BlockTempo, Blockcast, Google News (Crypto Aggregation)
+- **Aggregator**: Google News (Primary for Chinese content fallback)
 
 ## Tech Stack
 - Next.js 15 (App Router)

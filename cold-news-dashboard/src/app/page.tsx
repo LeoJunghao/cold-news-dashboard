@@ -11,6 +11,7 @@ export default function Dashboard() {
     intl: NewsItem[];
     geo: NewsItem[];
     tw: NewsItem[];
+    crypto: NewsItem[];
   } | null>(null);
 
   const [loading, setLoading] = useState(true);
@@ -91,6 +92,9 @@ export default function Dashboard() {
             <section id="tw">
               <NewsSection title="台灣財經要聞" items={data.tw} color="cyan" />
             </section>
+            <section id="crypto">
+              <NewsSection title="加密貨幣快訊" items={data.crypto} color="emerald" />
+            </section>
 
             {/* Total Summary Report */}
             <div className="mt-12 mb-8 mx-4 md:mx-0">
@@ -114,6 +118,7 @@ export default function Dashboard() {
                         const topIntl = data.intl[0]?.title || "全球局勢";
                         const topGeo = data.geo[0]?.title || "地緣動態";
                         const topTw = data.tw[0]?.title || "台股表現";
+                        const topCrypto = data.crypto[0]?.title || "加密貨幣震盪";
 
                         return `市場分析報告顯示，今日全球金融體系持續受到多重宏觀因素交互影響，投資氛圍呈現謹慎觀望。首要焦點集中於美國市場，「${topUS}」消息一出即引發市場關注，顯示核心經濟指標仍是左右資金流向的關鍵。
 

@@ -31,11 +31,8 @@ const CATEGORIES: Record<string, CategoryConfig> = {
         keywords: '美國財經 OR 美股 OR 聯準會 OR Fed OR 美債',
         limit: 10,
         feeds: [
-            { name: 'Google News', url: '', isGoogle: true }, // URL generated dynamically from keywords
-            { name: 'CNBC', url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664' }, // Finance
-            { name: 'WSJ', url: 'https://feeds.a.dj.com/rss/RSSMarketsMain.xml' },
-            { name: 'Yahoo Finance', url: 'https://finance.yahoo.com/news/rssindex' },
-            { name: 'MarketWatch', url: 'http://feeds.marketwatch.com/marketwatch/topstories' }
+            { name: 'Google News', url: '', isGoogle: true },
+            { name: 'Yahoo奇摩股市', url: 'https://tw.stock.yahoo.com/rss?category=intl-markets' } // Pure Chinese Source
         ]
     },
     intl: {
@@ -44,8 +41,7 @@ const CATEGORIES: Record<string, CategoryConfig> = {
         limit: 10,
         feeds: [
             { name: 'Google News', url: '', isGoogle: true },
-            { name: 'CNBC Intl', url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100727362' },
-            { name: 'WSJ World', url: 'https://feeds.a.dj.com/rss/RSSWorldNews.xml' }
+            { name: 'Yahoo奇摩股市', url: 'https://tw.stock.yahoo.com/rss?category=intl-markets' }
         ]
     },
     geo: {
@@ -54,7 +50,7 @@ const CATEGORIES: Record<string, CategoryConfig> = {
         limit: 5,
         feeds: [
             { name: 'Google News', url: '', isGoogle: true },
-            { name: 'WSJ World', url: 'https://feeds.a.dj.com/rss/RSSWorldNews.xml' }
+            // WSJ often has paywall/English in RSS, relying on Google News aggregation of Chinese media (CNA, UDN, etc.) for Geo is safer/better quality in Chinese.
         ]
     },
     tw: {
@@ -65,6 +61,16 @@ const CATEGORIES: Record<string, CategoryConfig> = {
             { name: 'Google News', url: '', isGoogle: true },
             { name: '中央社', url: 'https://feeds.feedburner.com/rsscna/finance' },
             { name: '經濟日報', url: 'https://money.udn.com/rssfeed/news/1001/5597/5722?ch=money' }
+        ]
+    },
+    crypto: {
+        name: '加密貨幣快訊',
+        keywords: '比特幣 OR 以太坊 OR 區塊鏈 OR Web3 OR 加密貨幣 source:動區 OR source:區塊客 OR source:金色財經',
+        limit: 5,
+        feeds: [
+            { name: 'Google News', url: '', isGoogle: true },
+            { name: '動區動趨', url: 'https://www.blocktempo.com/feed/' },
+            { name: '區塊客', url: 'https://blockcast.it/feed/' }
         ]
     }
 };
@@ -236,12 +242,13 @@ async function fetchCategoryNews(key: string, config: CategoryConfig, forceRefre
 }
 
 export async function getDashboardNews(forceRefresh: boolean = false) {
-    const [us, intl, geo, tw] = await Promise.all([
+    const [us, intl, geo, tw, crypto] = await Promise.all([
         fetchCategoryNews('us', CATEGORIES.us, forceRefresh),
         fetchCategoryNews('intl', CATEGORIES.intl, forceRefresh),
         fetchCategoryNews('geo', CATEGORIES.geo, forceRefresh),
-        fetchCategoryNews('tw', CATEGORIES.tw, forceRefresh)
+        fetchCategoryNews('tw', CATEGORIES.tw, forceRefresh),
+        fetchCategoryNews('crypto', CATEGORIES.crypto, forceRefresh)
     ]);
 
-    return { us, intl, geo, tw };
+    return { us, intl, geo, tw, crypto };
 }
