@@ -28,7 +28,7 @@ interface CategoryConfig {
 const CATEGORIES: Record<string, CategoryConfig> = {
     us: {
         name: '美國財經焦點',
-        keywords: '美國財經 OR 美股 OR 聯準會 OR Fed OR 美債',
+        keywords: '美國財經 OR 美股 OR 道瓊 OR 納斯達克 OR 標普500 OR 聯準會 OR Fed OR 美債 OR 美元匯率',
         limit: 10,
         feeds: [
             { name: 'Google News', url: '', isGoogle: true },
@@ -37,7 +37,7 @@ const CATEGORIES: Record<string, CategoryConfig> = {
     },
     intl: {
         name: '國際財經視野',
-        keywords: '全球經濟 OR 歐洲市場 OR 日韓股市 OR 新興市場 -美國 -台灣',
+        keywords: '中國經濟 OR 歐洲市場 OR 歐盟 OR 德國股市 OR 法國股市 OR 日經 OR 日本央行 OR 韓國股市 OR 印度經濟 OR 越南與東南亞財經 -美國 -美股 -聯準會',
         limit: 10,
         feeds: [
             { name: 'Google News', url: '', isGoogle: true },
@@ -50,7 +50,6 @@ const CATEGORIES: Record<string, CategoryConfig> = {
         limit: 5,
         feeds: [
             { name: 'Google News', url: '', isGoogle: true },
-            // WSJ often has paywall/English in RSS, relying on Google News aggregation of Chinese media (CNA, UDN, etc.) for Geo is safer/better quality in Chinese.
         ]
     },
     tw: {
@@ -127,9 +126,8 @@ async function fetchRSS(feed: FeedConfig, categoryName: string, query?: string, 
             }
 
             // Cleanup Summary
-            summary = summary.replace(/<[^>]+>/g, ''); // Remove HTML tags
+            summary = summary.replace(/<[^>]+>/g, '');
             summary = summary.replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
-            // Truncate summary if too long
             if (summary.length > 200) summary = summary.substring(0, 197) + '...';
 
             newsItems.push({
@@ -157,29 +155,23 @@ function calculateSimilarity(str1: string, str2: string): number {
     const s1 = normalize(str1);
     const s2 = normalize(str2);
 
-    // Exact match or substring check
     if (s1 === s2) return 1.0;
     if (s1.includes(s2) || s2.includes(s1)) return 1.0;
 
-    // Tokenization
-    // Detect Chinese characters: if present, treat as character-based tokens
     const hasChinese = /[\u4e00-\u9fa5]/.test(s1 + s2);
     let tokens1: Set<string>;
     let tokens2: Set<string>;
 
     if (hasChinese) {
-        // Character based for Chinese
         tokens1 = new Set(s1.split(''));
         tokens2 = new Set(s2.split(''));
     } else {
-        // Word based for English
-        tokens1 = new Set(s1.split(/\s+/).filter(w => w.length > 2)); // Filter short words
+        tokens1 = new Set(s1.split(/\s+/).filter(w => w.length > 2));
         tokens2 = new Set(s2.split(/\s+/).filter(w => w.length > 2));
     }
 
     if (tokens1.size === 0 || tokens2.size === 0) return 0.0;
 
-    // Intersection
     let intersection = 0;
     for (const t of tokens1) {
         if (tokens2.has(t)) intersection++;
@@ -191,47 +183,21 @@ function calculateSimilarity(str1: string, str2: string): number {
 
 async function fetchCategoryNews(key: string, config: CategoryConfig, forceRefresh: boolean = false): Promise<NewsItem[]> {
     try {
-        // Fetch all feeds for this category in parallel
         const feedPromises = config.feeds.map(feed => fetchRSS(feed, config.name, config.keywords, forceRefresh));
         const results = await Promise.all(feedPromises);
 
-        // Flatten results
         let allItems = results.flat();
-
-        // Sort by Time (Newest First) BEFORE deduplication to keep the latest version of duplicates
-        // OR: Keep the "Source Priority" order (Direct feeds first)?
-        // Let's sort by date first to ensure we display the latest news.
         allItems.sort((a, b) => b.pubDate - a.pubDate);
 
-        // Advanced Deduplication
+        // Local Deduplication (Keep it)
         const uniqueItems: NewsItem[] = [];
-
         for (const item of allItems) {
             let isDuplicate = false;
-
             for (const existing of uniqueItems) {
-                // Check 1: Exact Link Match
-                if (item.link === existing.link) {
-                    isDuplicate = true;
-                    break;
-                }
-
-                // Check 2: Title Similarity
-                const similarity = calculateSimilarity(item.title, existing.title);
-
-                // Threshold: 0.5 (50% overlap) seems reasonable for "Same Story" coverage
-                // e.g. "Nvidia stock hits record" vs "Nvidia stock reaches all time high" -> "nvidia", "stock" overlap.
-                if (similarity > 0.4) {
-                    isDuplicate = true;
-                    // Optional: If this new item has a "better" source (e.g. not Google), maybe replace?
-                    // For now, simple "first come (newest) served".
-                    break;
-                }
+                if (item.link === existing.link) { isDuplicate = true; break; }
+                if (calculateSimilarity(item.title, existing.title) > 0.4) { isDuplicate = true; break; }
             }
-
-            if (!isDuplicate) {
-                uniqueItems.push(item);
-            }
+            if (!isDuplicate) uniqueItems.push(item);
         }
 
         return uniqueItems.slice(0, config.limit);
@@ -241,14 +207,52 @@ async function fetchCategoryNews(key: string, config: CategoryConfig, forceRefre
     }
 }
 
+// Helper to filter a list against a global set of seen items
+function filterDuplicates(items: NewsItem[], globalSeen: NewsItem[]): NewsItem[] {
+    const unique: NewsItem[] = [];
+
+    for (const item of items) {
+        let isDuplicate = false;
+
+        for (const seen of globalSeen) {
+            // Check Link
+            if (item.link === seen.link) {
+                isDuplicate = true;
+                break;
+            }
+            // Check Title Similarity (Stricter threshold for cross-category)
+            if (calculateSimilarity(item.title, seen.title) > 0.5) {
+                isDuplicate = true;
+                break;
+            }
+        }
+
+        if (!isDuplicate) {
+            unique.push(item);
+            globalSeen.push(item);
+        }
+    }
+
+    return unique;
+}
+
 export async function getDashboardNews(forceRefresh: boolean = false) {
-    const [us, intl, geo, tw, crypto] = await Promise.all([
+    const [usRaw, intlRaw, geoRaw, twRaw, cryptoRaw] = await Promise.all([
         fetchCategoryNews('us', CATEGORIES.us, forceRefresh),
         fetchCategoryNews('intl', CATEGORIES.intl, forceRefresh),
         fetchCategoryNews('geo', CATEGORIES.geo, forceRefresh),
         fetchCategoryNews('tw', CATEGORIES.tw, forceRefresh),
         fetchCategoryNews('crypto', CATEGORIES.crypto, forceRefresh)
     ]);
+
+    // Priority Order: US -> Intl -> Geo -> Crypto -> TW
+    const globalSeen: NewsItem[] = []; // Stores all accepted items
+
+    const us = filterDuplicates(usRaw, globalSeen);
+    const intl = filterDuplicates(intlRaw, globalSeen);
+    const geo = filterDuplicates(geoRaw, globalSeen);
+    const crypto = filterDuplicates(cryptoRaw, globalSeen);
+    const tw = filterDuplicates(twRaw, globalSeen);
 
     return { us, intl, geo, tw, crypto };
 }
