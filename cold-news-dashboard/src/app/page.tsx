@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { RefreshCw, Zap, Globe, TrendingUp, Cpu } from 'lucide-react';
 import { NewsSection } from '@/components/NewsSection';
+import { Gauge } from '@/components/Gauge';
 import type { NewsItem } from '@/lib/news';
+import type { MarketStats } from '@/lib/stats';
 
 export default function Dashboard() {
   const [data, setData] = useState<{
@@ -14,19 +16,32 @@ export default function Dashboard() {
     crypto: NewsItem[];
   } | null>(null);
 
+  const [stats, setStats] = useState<MarketStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetchData = async (isForceRefresh = false) => {
     setLoading(true);
     if (isForceRefresh) {
-      setData(null); // Clear data to show full loading state
+      setData(null);
+      setStats(null);
     }
+
     try {
       const forceQuery = isForceRefresh ? '&force=true' : '';
-      const res = await fetch(`/api/news?t=${Date.now()}${forceQuery}`, { cache: 'no-store' });
-      const json = await res.json();
-      setData(json);
+      const timestamp = Date.now();
+
+      // Parallel Fetch
+      const [newsRes, statsRes] = await Promise.all([
+        fetch(`/api/news?t=${timestamp}${forceQuery}`, { cache: 'no-store' }),
+        fetch(`/api/stats?t=${timestamp}`, { cache: 'no-store' })
+      ]);
+
+      const newsJson = await newsRes.json();
+      const statsJson = await statsRes.json();
+
+      setData(newsJson);
+      setStats(statsJson);
       setLastUpdated(new Date());
     } catch (err) {
       console.error(err);
@@ -37,14 +52,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchData(false);
-  }, []); // Initial load
-
-
+  }, []);
 
   return (
     <main className="min-h-screen p-4 md:p-8 bg-[#050b14] text-slate-200">
       {/* Header */}
-      <header className="sticky top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 px-6 py-3 flex flex-row justify-between items-center shadow-lg backdrop-blur-xl bg-slate-900/90">
+      <header className="sticky top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 px-6 py-3 flex flex-row justify-between items-center shadow-lg backdrop-blur-xl bg-slate-900/90 mb-6">
         <div className="flex items-center gap-3">
           <div className="p-1.5 rounded-lg bg-cyan-950/50 border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.1)]">
             <Zap className="text-cyan-400" size={20} />
@@ -71,10 +84,38 @@ export default function Dashboard() {
         </div>
       </header>
 
+      {/* Gauges Section */}
+      <div className="max-w-7xl mx-auto mb-8 animate-in fade-in zoom-in duration-500">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Gauge
+            label="Fear & Greed (Stock)"
+            value={stats?.stockFnG || 50}
+            loading={!stats}
+          />
+          <Gauge
+            label="VIX Volatility"
+            value={stats?.vix || 20}
+            max={60}
+            unit=""
+            loading={!stats}
+          />
+          <Gauge
+            label="Crypto Fear & Greed"
+            value={stats?.cryptoFnG || 50}
+            loading={!stats}
+          />
+          <Gauge
+            label="Gold Sentiment (MM Proxy)"
+            value={stats?.goldSentiment || 50}
+            loading={!stats}
+          />
+        </div>
+      </div>
+
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto mt-6 space-y-8 pb-12">
+      <div className="max-w-7xl mx-auto space-y-8 pb-12">
         {!data && loading ? (
-          <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+          <div className="flex flex-col items-center justify-center h-[40vh] gap-4">
             <div className="w-12 h-12 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
             <p className="text-slate-500 font-mono animate-pulse">Initializing Data Stream...</p>
           </div>
