@@ -116,7 +116,7 @@ export default function Dashboard() {
             <Zap className="text-cyan-400" size={20} />
           </div>
           <div className="flex flex-col">
-            <h1 className="text-lg font-bold text-slate-100 tracking-tight">
+            <h1 className="text-lg font-bold text-yellow-400 font-mono tracking-tight text-shadow-sm">
               即時財經新聞摘要
             </h1>
             <p className="text-[10px] text-slate-500 font-mono tracking-wider">
@@ -126,6 +126,15 @@ export default function Dashboard() {
         </div>
 
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => fetchData(true)}
+            disabled={loading}
+            className="flex items-center gap-2 px-4 py-2 bg-cyan-600/10 hover:bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
+          >
+            <RefreshCw size={16} className={`transition-transform duration-700 ${loading ? 'animate-spin' : 'group-hover:rotate-180'}`} />
+            <span className="text-sm font-medium tracking-wide hidden sm:inline">{loading ? 'SYNCING...' : 'REFRESH'}</span>
+          </button>
+
           {/* Mail Button */}
           <button
             onClick={handleEmail}
@@ -134,15 +143,6 @@ export default function Dashboard() {
           >
             <Mail size={16} className="text-cyan-400 group-hover:text-cyan-300 transition-colors" />
             <span className="text-sm font-medium tracking-wide hidden sm:inline">MAIL</span>
-          </button>
-
-          <button
-            onClick={() => fetchData(true)}
-            disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 bg-cyan-600/10 hover:bg-cyan-600/20 text-cyan-400 border border-cyan-500/30 rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
-          >
-            <RefreshCw size={16} className={`transition-transform duration-700 ${loading ? 'animate-spin' : 'group-hover:rotate-180'}`} />
-            <span className="text-sm font-medium tracking-wide hidden sm:inline">{loading ? 'SYNCING...' : 'REFRESH'}</span>
           </button>
         </div>
       </header>
