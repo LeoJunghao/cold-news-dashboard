@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { RefreshCw, Zap, Globe, TrendingUp, Cpu } from 'lucide-react';
+import { RefreshCw, Zap, Globe, TrendingUp, Cpu, Mail } from 'lucide-react';
 import { NewsSection } from '@/components/NewsSection';
 import { Gauge } from '@/components/Gauge';
 import type { NewsItem } from '@/lib/news';
@@ -53,6 +53,50 @@ export default function Dashboard() {
   useEffect(() => {
     fetchData(false);
   }, []);
+
+  const handleEmail = () => {
+    if (!data) return;
+
+    const formatDate = (date: Date) => {
+      return date.toLocaleString('zh-TW', { hour12: false });
+    };
+
+    const topUS = data.us[0]?.title || "市場波動";
+    const topIntl = data.intl[0]?.title || "全球局勢";
+    const topGeo = data.geo[0]?.title || "地緣動態";
+    const topTw = data.tw[0]?.title || "台股表現";
+
+    const marketSummary = `市場分析報告顯示，今日全球金融體系持續受到多重宏觀因素交互影響。首要焦點集中於美國市場，「${topUS}」消息一出即引發市場關注。在國際板塊方面，「${topIntl}」亦成為重要風向球。此外，地緣政治風險未曾消退，「${topGeo}」局勢發展仍具不確定性。回歸台灣市場，「${topTw}」議題直接牽動產業鏈敏感神經。`;
+
+    const subject = `財經新聞摘要 - ${formatDate(new Date())}`;
+
+    let body = `${marketSummary}\n\n`;
+
+    const sections = [
+      { title: '美國財經焦點', items: data.us },
+      { title: '國際財經視野', items: data.intl },
+      { title: '全球地緣政治與軍事', items: data.geo },
+      { title: '台灣財經要聞', items: data.tw },
+      { title: '加密貨幣快訊', items: data.crypto },
+    ];
+
+    sections.forEach(section => {
+      if (section.items.length > 0) {
+        body += `【${section.title}】\n`;
+        section.items.forEach((item, index) => {
+          body += `${index + 1}. ${item.title}\n`;
+          body += `   摘要: ${item.summary}\n\n`;
+        });
+        body += `----------------------------------------\n\n`;
+      }
+    });
+
+    body += `Sources: CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News`;
+
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    window.open(gmailUrl, '_blank');
+  };
 
   return (
     <main className="min-h-screen p-4 md:p-8 bg-[#050b14] text-slate-200">
@@ -180,6 +224,21 @@ export default function Dashboard() {
 
             <div className="text-center text-slate-600 text-sm font-mono mt-10 pt-10 border-t border-slate-800">
               Sources: CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News • Priority &lt; 6h • Excludes {'>'} 24h
+            </div>
+
+            {/* Email Button */}
+            <div className="flex justify-center mt-6 pb-8">
+              <button
+                onClick={handleEmail}
+                className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 hover:from-blue-600/30 hover:to-cyan-600/30 border border-cyan-500/30 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 group shadow-[0_0_20px_rgba(6,182,212,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.2)]"
+              >
+                <div className="p-1.5 rounded-full bg-cyan-500/10 group-hover:bg-cyan-500/20 transition-colors">
+                  <Mail className="text-cyan-400 group-hover:text-cyan-300" size={20} />
+                </div>
+                <span className="text-slate-200 font-medium tracking-wide">
+                  整理成郵件草稿
+                </span>
+              </button>
             </div>
           </>
         ) : (
