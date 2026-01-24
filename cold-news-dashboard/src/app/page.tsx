@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { RefreshCw, Zap, Globe, TrendingUp, Cpu, Mail } from 'lucide-react';
+import { RefreshCw, Zap, Globe, TrendingUp, Cpu, Copy } from 'lucide-react';
 import { NewsSection } from '@/components/NewsSection';
 import { Gauge } from '@/components/Gauge';
 import type { NewsItem } from '@/lib/news';
@@ -54,7 +54,7 @@ export default function Dashboard() {
     fetchData(false);
   }, []);
 
-  const handleEmail = () => {
+  const handleCopy = () => {
     if (!data) return;
 
     const formatDate = (date: Date) => {
@@ -93,17 +93,11 @@ export default function Dashboard() {
 
     body += `Sources: CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News`;
 
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=&su=${encodeURIComponent(subject)}`;
-
-    window.open(gmailUrl, '_blank');
-
     navigator.clipboard.writeText(body).then(() => {
-      setTimeout(() => {
-        alert("由於內容過長，已為您複製到剪貼簿！\n\n請在 Gmail 內容區按 Ctrl+V (或 Cmd+V) 貼上。");
-      }, 500);
+      alert("Analysis copied to clipboard!");
     }).catch(err => {
       console.error('Copy failed', err);
-      alert("自動複製失敗，請手動整理。");
+      alert("Failed to copy to clipboard.");
     });
   };
 
@@ -135,14 +129,14 @@ export default function Dashboard() {
             <span className="text-sm font-medium tracking-wide hidden sm:inline">{loading ? 'SYNCING...' : 'REFRESH'}</span>
           </button>
 
-          {/* Mail Button */}
+          {/* Copy Button */}
           <button
-            onClick={handleEmail}
+            onClick={handleCopy}
             disabled={!data}
             className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 border border-slate-700/50 rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
           >
-            <Mail size={16} className="text-cyan-400 group-hover:text-cyan-300 transition-colors" />
-            <span className="text-sm font-medium tracking-wide hidden sm:inline">MAIL</span>
+            <Copy size={16} className="text-cyan-400 group-hover:text-cyan-300 transition-colors" />
+            <span className="text-sm font-medium tracking-wide hidden sm:inline">COPY</span>
           </button>
         </div>
       </header>
