@@ -1,4 +1,4 @@
-import { Zap } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface GaugeProps {
     value: number;
@@ -10,42 +10,39 @@ interface GaugeProps {
 }
 
 export function Gauge({ value, min = 0, max = 100, label, unit = "", loading = false }: GaugeProps) {
-    // Normalize value to 0-100 for gauge calculation
     const normalizedValue = Math.min(Math.max(((value - min) / (max - min)) * 100, 0), 100);
-    const rotation = (normalizedValue / 100) * 180 - 90; // -90deg to +90deg
+    const rotation = (normalizedValue / 100) * 180 - 90;
 
-    // Semantic Color Logic for the ARC (Keep semantic for quick reading)
     let strokeColor = "#fcd34d"; // Default Amber-300
     let stateText = getLabelForValue(label, value, !!loading);
-    let stateColorClass = "text-yellow-200/70"; // Default pale yellow
+    let stateColorClass = "text-yellow-200/70";
 
     if (label.includes("Greed")) {
-        if (value < 25) { strokeColor = "#ef4444"; stateColorClass = "text-red-400"; } // Extreme Fear
-        else if (value < 45) { strokeColor = "#fb923c"; stateColorClass = "text-orange-300"; } // Fear
-        else if (value > 75) { strokeColor = "#22c55e"; stateColorClass = "text-green-400"; } // Extreme Greed
-        else if (value > 55) { strokeColor = "#34d399"; stateColorClass = "text-emerald-300"; } // Greed
-        else { strokeColor = "#fcd34d"; stateColorClass = "text-yellow-200/70"; } // Neutral
-    }
-
-    if (label.includes("VIX")) {
+        if (value < 25) { strokeColor = "#ef4444"; stateColorClass = "text-red-400"; }
+        else if (value < 45) { strokeColor = "#fb923c"; stateColorClass = "text-orange-300"; }
+        else if (value > 75) { strokeColor = "#22c55e"; stateColorClass = "text-green-400"; }
+        else if (value > 55) { strokeColor = "#34d399"; stateColorClass = "text-emerald-300"; }
+        else { strokeColor = "#fcd34d"; stateColorClass = "text-yellow-200/70"; }
+    } else if (label.includes("VIX")) {
         if (value < 15) { strokeColor = "#22c55e"; stateColorClass = "text-green-400"; }
         else if (value < 25) { strokeColor = "#fcd34d"; stateColorClass = "text-yellow-200/70"; }
         else { strokeColor = "#ef4444"; stateColorClass = "text-red-400"; }
-    }
-
-    // MM Gold Trend: Higher = Optimistic (Green/Yellow)
-    if (label.includes("Gold")) {
+    } else if (label.includes("Gold")) {
         if (value > 60) { strokeColor = "#eab308"; stateColorClass = "text-yellow-400"; }
         else if (value < 40) { strokeColor = "#94a3b8"; stateColorClass = "text-slate-400"; }
     }
 
     return (
-        <div className="glass-panel p-3 rounded-lg flex flex-col items-center justify-center relative min-h-[120px] border border-yellow-500/10 bg-slate-950/80 shadow-[inset_0_0_20px_rgba(253,224,71,0.02)]">
+        <div className={cn(
+            "glass-panel p-3 rounded-lg flex flex-col items-center justify-center relative min-h-[120px]",
+            "border border-yellow-500/10 bg-slate-950/80",
+            "shadow-[inset_0_0_20px_rgba(253,224,71,0.02)]"
+        )}>
             {/* Corner Accents */}
-            <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-yellow-500/30 rounded-tl-sm"></div>
-            <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-yellow-500/30 rounded-tr-sm"></div>
-            <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-yellow-500/30 rounded-bl-sm"></div>
-            <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-yellow-500/30 rounded-br-sm"></div>
+            <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-yellow-500/30 rounded-tl-sm" />
+            <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-yellow-500/30 rounded-tr-sm" />
+            <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-yellow-500/30 rounded-bl-sm" />
+            <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-yellow-500/30 rounded-br-sm" />
 
             <h3 className="text-[10px] font-bold font-mono text-purple-400 uppercase tracking-tighter mb-1 text-center h-3 flex items-center drop-shadow-[0_0_3px_rgba(168,85,247,0.5)]">
                 {label}
@@ -53,43 +50,44 @@ export function Gauge({ value, min = 0, max = 100, label, unit = "", loading = f
 
             {loading ? (
                 <div className="animate-pulse w-full h-16 flex items-center justify-center">
-                    <div className="w-6 h-6 rounded-full border border-yellow-500/20 border-t-yellow-400 animate-spin"></div>
+                    <div className="w-6 h-6 rounded-full border border-yellow-500/20 border-t-yellow-400 animate-spin" />
                 </div>
             ) : (
                 <div className="relative w-28 h-14 overflow-hidden mt-1">
-                    {/* Tech Background Grid/Ticks */}
                     <svg viewBox="0 0 100 50" className="absolute top-0 left-0 w-full h-full opacity-30">
-                        {/* Ticks */}
                         <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#fef08a" strokeWidth="1" strokeDasharray="1 3" />
                     </svg>
 
-                    {/* Gauge Background Arc */}
                     <svg viewBox="0 0 100 50" className="absolute top-0 left-0 w-full h-full">
                         <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="#1e293b" strokeWidth="4" strokeLinecap="butt" />
-                        <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke={strokeColor} strokeWidth="4" strokeDasharray="110" strokeDashoffset={110 - (110 * normalizedValue / 100)} strokeLinecap="butt" className="transition-all duration-1000 ease-out drop-shadow-[0_0_8px_rgba(234,179,8,0.3)]" />
+                        <path
+                            d="M 15 50 A 35 35 0 0 1 85 50"
+                            fill="none"
+                            stroke={strokeColor}
+                            strokeWidth="4"
+                            strokeDasharray="110"
+                            strokeDashoffset={110 - (110 * normalizedValue / 100)}
+                            strokeLinecap="butt"
+                            className="transition-all duration-1000 ease-out drop-shadow-[0_0_8px_rgba(234,179,8,0.3)]"
+                        />
                     </svg>
 
-                    {/* Needle */}
                     <div
                         className="absolute bottom-0 left-1/2 w-[1px] h-full origin-bottom transition-transform duration-1000 ease-out z-10"
                         style={{ transform: `translateX(-50%) rotate(${rotation}deg)` }}
                     >
-                        <div className="w-full h-[90%] bg-yellow-100 shadow-[0_0_5px_rgba(253,224,71,0.8)]"></div>
+                        <div className="w-full h-[90%] bg-yellow-100 shadow-[0_0_5px_rgba(253,224,71,0.8)]" />
                     </div>
-                    {/* Pivot */}
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-2 bg-slate-900 border-t border-yellow-500/30 rounded-t-full z-20"></div>
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-2 bg-slate-900 border-t border-yellow-500/30 rounded-t-full z-20" />
                 </div>
             )}
 
-            {/* Value Display */}
             <div className="mt-1 flex flex-col items-center">
                 <div className="text-lg font-bold font-mono text-yellow-50 tracking-tighter drop-shadow-md leading-none">
                     {loading ? '--' : value.toFixed(1)}
                     <span className="text-[9px] ml-0.5 opacity-60 text-yellow-200/50 font-sans">{unit}</span>
                 </div>
-
-                {/* State Text */}
-                <div className={`text-[9px] mt-0.5 font-mono uppercase tracking-wider ${stateColorClass}`}>
+                <div className={cn("text-[9px] mt-0.5 font-mono uppercase tracking-wider", stateColorClass)}>
                     {loading ? "SYNC" : stateText}
                 </div>
             </div>
@@ -104,7 +102,6 @@ function getLabelForValue(type: string, val: number, loading: boolean): string {
         if (val < 25) return "NORMAL";
         return "HIGH VOLATILITY";
     }
-    // Fear & Greed / Sentiment
     if (val < 25) return "EXTREME FEAR";
     if (val < 45) return "FEAR";
     if (val < 55) return "NEUTRAL";

@@ -1,5 +1,9 @@
+'use client';
+
 import { NewsCard } from './NewsCard';
 import type { NewsItem } from '@/lib/news';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface SectionProps {
     title: string;
@@ -7,39 +11,60 @@ interface SectionProps {
     color: string;
 }
 
-export function NewsSection({ title, items, color }: SectionProps) {
-    // Map color to Tailwind classes or styles
-    const borderColor = color === 'cyan' ? 'border-cyan-500/30' :
-        color === 'blue' ? 'border-blue-500/30' :
-            color === 'purple' ? 'border-purple-500/30' : 'border-slate-500/30';
+const colorMap: Record<string, { border: string; text: string; dot: string }> = {
+    cyan: { border: 'border-cyan-500/30', text: 'text-cyan-400', dot: 'bg-cyan-500 shadow-[0_0_8px_#06b6d4]' },
+    blue: { border: 'border-blue-500/30', text: 'text-blue-400', dot: 'bg-blue-500 shadow-[0_0_8px_#3b82f6]' },
+    purple: { border: 'border-purple-500/30', text: 'text-purple-400', dot: 'bg-purple-500 shadow-[0_0_8px_#a855f7]' },
+    emerald: { border: 'border-emerald-500/30', text: 'text-emerald-400', dot: 'bg-emerald-500 shadow-[0_0_8px_#10b981]' },
+    default: { border: 'border-slate-500/30', text: 'text-slate-400', dot: 'bg-slate-500' }
+};
 
-    const titleColor = color === 'cyan' ? 'text-cyan-400' :
-        color === 'blue' ? 'text-blue-400' :
-            color === 'purple' ? 'text-purple-400' : 'text-slate-400';
+const container = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
+
+const itemAnim = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+};
+
+export function NewsSection({ title, items, color }: SectionProps) {
+    const styles = colorMap[color] || colorMap.default;
 
     return (
-        <div className="mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className={`flex items-center gap-2 mb-4 pb-2 border-b ${borderColor}`}>
-                <div className={`w-1 h-5 rounded-full ${color === 'cyan' ? 'bg-cyan-500 shadow-[0_0_8px_#06b6d4]' :
-                    color === 'blue' ? 'bg-blue-500 shadow-[0_0_8px_#3b82f6]' :
-                        color === 'purple' ? 'bg-purple-500 shadow-[0_0_8px_#a855f7]' :
-                            color === 'emerald' ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' :
-                                'bg-slate-500'}`} />
-                <h2 className={`text-lg font-bold tracking-wider uppercase ${titleColor}`}>
+        <div className="mb-6">
+            <div className={cn("flex items-center gap-2 mb-4 pb-2 border-b", styles.border)}>
+                <div className={cn("w-1 h-5 rounded-full", styles.dot)} />
+                <h2 className={cn("text-lg font-bold tracking-wider uppercase", styles.text)}>
                     {title} <span className="text-slate-600 text-xs ml-2 font-mono">({items.length})</span>
                 </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3">
+            <motion.div
+                variants={container}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, margin: "-50px" }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3"
+            >
                 {items.map((item) => (
-                    <NewsCard key={item.id} item={item} />
+                    <motion.div key={item.id} variants={itemAnim}>
+                        <NewsCard item={item} />
+                    </motion.div>
                 ))}
-                {items.length === 0 && (
-                    <div className="col-span-full py-8 text-center text-slate-600 font-mono text-xs border border-dashed border-slate-800 rounded-lg">
-                        No recent news found in this category (24h).
-                    </div>
-                )}
-            </div>
+            </motion.div>
+
+            {items.length === 0 && (
+                <div className="py-8 text-center text-slate-600 font-mono text-xs border border-dashed border-slate-800 rounded-lg">
+                    No recent news found in this category (24h).
+                </div>
+            )}
         </div>
     );
 }

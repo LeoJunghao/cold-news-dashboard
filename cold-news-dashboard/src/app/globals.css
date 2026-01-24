@@ -1,15 +1,11 @@
 @import "tailwindcss";
 
-
-/* Cold Light Theme */
-
 :root {
   --background: #050b14;
   --foreground: #f1f5f9;
   --card-bg: rgba(15, 23, 42, 0.6);
   --card-border: rgba(56, 189, 248, 0.2);
   --primary: #06b6d4;
-  /* Cyan 500 */
   --primary-glow: #00f0ff;
   --secondary: #3b82f6;
   --accent: #f472b6;
@@ -20,10 +16,15 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-outfit), 'Inter', system-ui, sans-serif;
   background-image:
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+    /* Scanlines */
+    linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)),
+    /* RGB Split hint */
     radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
     radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+  background-size: 100% 4px, 100% 100%, 100% 100%, 100% 100%;
   background-attachment: fixed;
   min-height: 100vh;
 }
