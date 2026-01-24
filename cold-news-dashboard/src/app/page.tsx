@@ -116,7 +116,7 @@ export default function Dashboard() {
             <Zap className="text-cyan-400" size={20} />
           </div>
           <div className="flex flex-col">
-            <h1 className="text-lg font-bold text-purple-400 font-mono tracking-tighter drop-shadow-[0_0_5px_rgba(168,85,247,0.8)]">
+            <h1 className="text-lg font-bold text-yellow-400 font-mono tracking-tighter drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]">
               即時財經新聞摘要
             </h1>
             <p className="text-[10px] text-slate-500 font-mono tracking-wider">
