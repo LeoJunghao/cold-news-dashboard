@@ -137,6 +137,13 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                         trend={stats?.brentCrude && stats.brentCrude > 85 ? 'up' : 'neutral'}
                         loading={loading}
                     />
+                    <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
+                    <MacroItem
+                        label="Gold Price"
+                        value={`$${stats?.goldPrice?.toFixed(1) || '---'}`}
+                        trend={stats?.goldPrice && stats.goldPrice > 2000 ? 'up' : 'neutral'}
+                        loading={loading}
+                    />
                 </div>
             </motion.div>
 
@@ -247,16 +254,11 @@ function MacroItem({ label, value, trend, loading }: { label: string, value: str
         </div>
     );
 
-    const color = trend === 'up' ? 'text-red-400' : trend === 'down' ? 'text-emerald-400' : 'text-slate-200';
-    // Note: For Yields/DXY: Up is usually "Red/Danger" for stocks, or we just keep standard Green=Up?
-    // Let's stick to Green=Up, Red=Down for pure price action, unless specified.
-    // For DXY/Yields, high is often "bad" for stocks, but let's just stick to generic "Green = High" or "Red = High"?
-    // Financial standard: Green = Up, Red = Down. Let's use standard.
     const standardColor = trend === 'up' ? 'text-red-400' : trend === 'down' ? 'text-green-400' : 'text-slate-200'; // Taiwan logic: Red=Up
 
     return (
         <div className="flex flex-col items-center min-w-[120px]">
-            <span className="text-[10px] text-slate-500 font-mono uppercase tracking-wider">{label}</span>
+            <span className="text-[10px] font-bold font-mono text-purple-400 uppercase tracking-tighter mb-1 text-center flex items-center drop-shadow-[0_0_3px_rgba(168,85,247,0.5)]">{label}</span>
             <span className={cn("text-lg font-bold font-mono tracking-tight", standardColor)}>
                 {value}
             </span>

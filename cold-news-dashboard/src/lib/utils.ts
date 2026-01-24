@@ -33,6 +33,7 @@ export function formatNewsForClipboard(data: {
 - 美國10年期公債殖利率: ${stats.us10Y.toFixed(2)}% (全球資產定價之錨)
 - 美元指數 (DXY): ${stats.dollarIndex.toFixed(2)} (資金流向指標)
 - 布蘭特原油: $${stats.brentCrude.toFixed(2)} (通膨領先指標)
+- 黃金價格: $${stats.goldPrice?.toFixed(1) || '---'} (避險情緒)
 - VIX 恐慌指數: ${stats.vix.toFixed(2)}
 - 股市貪婪恐懼: ${stats.stockFnG}
 `;

@@ -9,6 +9,7 @@ export interface MarketStats {
     us10Y: number;
     dollarIndex: number;
     brentCrude: number;
+    goldPrice: number;
 }
 
 // Generic helper to fetch price from Yahoo Finance Chart API
@@ -37,15 +38,17 @@ async function getUS10Y(): Promise<number> {
 
 // New: Dollar Index (DX-Y.NYB)
 async function getDollarIndex(): Promise<number> {
-    // Note: Yahoo symbol for Dollar Index Future is DX=F or Index DX-Y.NYB
-    // DX-Y.NYB is often delayed. DX=F is futures. Let's try DX-Y.NYB first, fallback to DX=F if needed.
-    // Using DX-Y.NYB for spot index.
     return getYahooPrice('DX-Y.NYB', 100);
 }
 
 // New: Brent Crude Oil (BZ=F)
 async function getBrentCrude(): Promise<number> {
     return getYahooPrice('BZ=F', 80);
+}
+
+// New: Gold Price (GC=F)
+async function getGoldPrice(): Promise<number> {
+    return getYahooPrice('GC=F', 2000);
 }
 
 // 2. Crypto Fear & Greed from Alternative.me
@@ -103,12 +106,13 @@ async function getGoldSentiment(): Promise<number> {
 
 export async function getMarketStats(): Promise<MarketStats> {
     // Parallel fetch
-    const [vix, cryptoData, us10Y, dxy, brent] = await Promise.all([
+    const [vix, cryptoData, us10Y, dxy, brent, goldPrice] = await Promise.all([
         getVIX(),
         getCryptoFnG(),
         getUS10Y(),
         getDollarIndex(),
-        getBrentCrude()
+        getBrentCrude(),
+        getGoldPrice()
     ]);
 
     // Dependent stats
@@ -124,6 +128,7 @@ export async function getMarketStats(): Promise<MarketStats> {
         goldSentiment: goldData,
         us10Y,
         dollarIndex: dxy,
-        brentCrude: brent
+        brentCrude: brent,
+        goldPrice
     };
 }
