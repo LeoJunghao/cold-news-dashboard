@@ -93,9 +93,18 @@ export default function Dashboard() {
 
     body += `Sources: CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News`;
 
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=&su=${encodeURIComponent(subject)}`;
 
     window.open(gmailUrl, '_blank');
+
+    navigator.clipboard.writeText(body).then(() => {
+      setTimeout(() => {
+        alert("由於內容過長，已為您複製到剪貼簿！\n\n請在 Gmail 內容區按 Ctrl+V (或 Cmd+V) 貼上。");
+      }, 500);
+    }).catch(err => {
+      console.error('Copy failed', err);
+      alert("自動複製失敗，請手動整理。");
+    });
   };
 
   return (
