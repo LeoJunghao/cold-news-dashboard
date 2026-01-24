@@ -61,8 +61,8 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
     }, [fetchData]);
 
     const handleCopy = () => {
-        if (!data) return;
-        const body = formatNewsForClipboard(data);
+        if (!data || !stats) return;
+        const body = formatNewsForClipboard(data, stats);
         navigator.clipboard.writeText(body).then(() => {
             alert("Analysis copied to clipboard!");
         }).catch(err => {
@@ -110,11 +110,41 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                 </div>
             </header>
 
+            {/* Macro Pulse Section */}
+            <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="max-w-7xl mx-auto mb-6 px-4 md:px-0"
+            >
+                <div className="flex flex-wrap md:flex-nowrap gap-3 md:gap-6 justify-center items-center py-3 bg-cyan-950/20 border-y border-cyan-500/20 backdrop-blur-sm">
+                    <MacroItem
+                        label="US 10Y Yield"
+                        value={`${stats?.us10Y?.toFixed(2)}%`}
+                        trend={stats?.us10Y && stats.us10Y > 4.2 ? 'up' : 'neutral'}
+                        loading={loading}
+                    />
+                    <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
+                    <MacroItem
+                        label="Dollar Index (DXY)"
+                        value={stats?.dollarIndex?.toFixed(2) || '---'}
+                        trend={stats?.dollarIndex && stats.dollarIndex > 103 ? 'up' : 'down'}
+                        loading={loading}
+                    />
+                    <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
+                    <MacroItem
+                        label="Brent Crude Oil"
+                        value={`$${stats?.brentCrude?.toFixed(2)}`}
+                        trend={stats?.brentCrude && stats.brentCrude > 85 ? 'up' : 'neutral'}
+                        loading={loading}
+                    />
+                </div>
+            </motion.div>
+
             {/* Gauges Section */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
                 className="max-w-7xl mx-auto mb-8"
             >
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -206,5 +236,30 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                 </div>
             </div>
         </main>
+    );
+}
+
+function MacroItem({ label, value, trend, loading }: { label: string, value: string, trend: 'up' | 'down' | 'neutral', loading: boolean }) {
+    if (loading) return (
+        <div className="flex flex-col items-center min-w-[120px] animate-pulse">
+            <div className="h-3 w-20 bg-slate-800 rounded mb-1"></div>
+            <div className="h-5 w-16 bg-slate-800/50 rounded"></div>
+        </div>
+    );
+
+    const color = trend === 'up' ? 'text-red-400' : trend === 'down' ? 'text-emerald-400' : 'text-slate-200';
+    // Note: For Yields/DXY: Up is usually "Red/Danger" for stocks, or we just keep standard Green=Up?
+    // Let's stick to Green=Up, Red=Down for pure price action, unless specified.
+    // For DXY/Yields, high is often "bad" for stocks, but let's just stick to generic "Green = High" or "Red = High"?
+    // Financial standard: Green = Up, Red = Down. Let's use standard.
+    const standardColor = trend === 'up' ? 'text-red-400' : trend === 'down' ? 'text-green-400' : 'text-slate-200'; // Taiwan logic: Red=Up
+
+    return (
+        <div className="flex flex-col items-center min-w-[120px]">
+            <span className="text-[10px] text-slate-500 font-mono uppercase tracking-wider">{label}</span>
+            <span className={cn("text-lg font-bold font-mono tracking-tight", standardColor)}>
+                {value}
+            </span>
+        </div>
     );
 }

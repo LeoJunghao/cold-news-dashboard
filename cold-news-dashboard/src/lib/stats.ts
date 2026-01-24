@@ -5,20 +5,47 @@ export interface MarketStats {
     stockFnG: number;
     cryptoFnG: number;
     goldSentiment: number;
+    // New Macro Indicators
+    us10Y: number;
+    dollarIndex: number;
+    brentCrude: number;
 }
 
-// 1. VIX from Yahoo Finance Chart API
-// Fallback/Proxy: Standard requests to query1.finance.yahoo.com often work without token for simple chart data
-async function getVIX(): Promise<number> {
+// Generic helper to fetch price from Yahoo Finance Chart API
+async function getYahooPrice(symbol: string, fallback: number): Promise<number> {
     try {
-        const res = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?interval=1d&range=1d', { next: { revalidate: 300 } });
+        const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`, { next: { revalidate: 300 } });
+        if (!res.ok) return fallback;
         const data = await res.json();
         const quote = data.chart?.result?.[0]?.meta?.regularMarketPrice;
-        return quote || 20; // Default fallback
+        return quote !== undefined ? quote : fallback;
     } catch (e) {
-        console.error("VIX Fetch Error", e);
-        return 20;
+        console.error(`Fetch Error for ${symbol}`, e);
+        return fallback;
     }
+}
+
+// 1. VIX
+async function getVIX(): Promise<number> {
+    return getYahooPrice('%5EVIX', 20);
+}
+
+// New: US 10Y Treasury Yield (^TNX)
+async function getUS10Y(): Promise<number> {
+    return getYahooPrice('%5ETNX', 4.0);
+}
+
+// New: Dollar Index (DX-Y.NYB)
+async function getDollarIndex(): Promise<number> {
+    // Note: Yahoo symbol for Dollar Index Future is DX=F or Index DX-Y.NYB
+    // DX-Y.NYB is often delayed. DX=F is futures. Let's try DX-Y.NYB first, fallback to DX=F if needed.
+    // Using DX-Y.NYB for spot index.
+    return getYahooPrice('DX-Y.NYB', 100);
+}
+
+// New: Brent Crude Oil (BZ=F)
+async function getBrentCrude(): Promise<number> {
+    return getYahooPrice('BZ=F', 80);
 }
 
 // 2. Crypto Fear & Greed from Alternative.me
@@ -33,11 +60,7 @@ async function getCryptoFnG(): Promise<number> {
     }
 }
 
-// 3. Stock Fear & Greed
-// Try CNN unofficial endpoint. Fallback: Calculate based on VIX.
-// VIX 10-15 -> Greed (75-90), VIX 30+ -> Fear (10-25). 
-// Simple formula: 100 - ((VIX - 10) * 2.5). confined 0-100.
-// This is a "Synthetic" Fear & Greed if API fails.
+// 3. Stock Fear & Greed (CNN Proxy)
 async function getStockFnG(currentVIX: number): Promise<number> {
     try {
         const res = await fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata', {
@@ -54,20 +77,11 @@ async function getStockFnG(currentVIX: number): Promise<number> {
     }
 
     // Fallback: VIX Proxy
-    // VIX 12 => Score 80
-    // VIX 20 => Score 50
-    // VIX 35 => Score 10
-    // Linear fit roughly: Score = 110 - 3 * VIX
     let proxy = 110 - (3 * currentVIX);
     return Math.max(0, Math.min(100, proxy));
 }
 
 // 4. MM Gold Sentiment (Proxy: Gold Trend)
-// Fetch Gold Price (GC=F). Compare close to previous close?
-// Actually simpler: Relative Strength (RSI) proxy or just Moving Average delta.
-// Let's use: (Current Price / 50-day-avg) * 50 as a "Sentiment" 0-100 score?
-// Or simpler: Yahoo Quote Change %.
-// Score = 50 + (Change% * 10). If up 1% -> 60. Up 2% -> 70.
 async function getGoldSentiment(): Promise<number> {
     try {
         // GC=F
@@ -80,11 +94,6 @@ async function getGoldSentiment(): Promise<number> {
         if (!price || !prevClose) return 50;
 
         const changePercent = ((price - prevClose) / prevClose) * 100;
-
-        // Map -3% to +3% change to 0-100 scale centered at 50
-        // -3% => 20 (Fear)
-        // +3% => 80 (Greed)
-        // Formula: 50 + (changePercent * 10)
         let sentiment = 50 + (changePercent * 10);
         return Math.max(10, Math.min(90, sentiment));
     } catch (e) {
@@ -93,20 +102,28 @@ async function getGoldSentiment(): Promise<number> {
 }
 
 export async function getMarketStats(): Promise<MarketStats> {
-    // 1. Fetch VIX first (needed for stock FnG fallback)
-    const vix = await getVIX();
-
-    // 2. Fetch others in parallel
-    const [cryptoData, stockData, goldData] = await Promise.all([
+    // Parallel fetch
+    const [vix, cryptoData, us10Y, dxy, brent] = await Promise.all([
+        getVIX(),
         getCryptoFnG(),
-        getStockFnG(vix), // Pass VIX as fallback
+        getUS10Y(),
+        getDollarIndex(),
+        getBrentCrude()
+    ]);
+
+    // Dependent stats
+    const [stockData, goldData] = await Promise.all([
+        getStockFnG(vix),
         getGoldSentiment()
     ]);
 
     return {
         vix,
-        cryptoFnG: cryptoData,
         stockFnG: stockData,
-        goldSentiment: goldData
+        cryptoFnG: cryptoData,
+        goldSentiment: goldData,
+        us10Y,
+        dollarIndex: dxy,
+        brentCrude: brent
     };
 }
