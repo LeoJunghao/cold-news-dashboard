@@ -126,6 +126,16 @@ export default function Dashboard() {
         </div>
 
         <div className="flex items-center gap-4">
+          {/* Mail Button */}
+          <button
+            onClick={handleEmail}
+            disabled={!data}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 border border-slate-700/50 rounded-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
+          >
+            <Mail size={16} className="text-cyan-400 group-hover:text-cyan-300 transition-colors" />
+            <span className="text-sm font-medium tracking-wide hidden sm:inline">MAIL</span>
+          </button>
+
           <button
             onClick={() => fetchData(true)}
             disabled={loading}
@@ -235,20 +245,7 @@ export default function Dashboard() {
               Sources: CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News • Priority &lt; 6h • Excludes {'>'} 24h
             </div>
 
-            {/* Email Button */}
-            <div className="flex justify-center mt-6 pb-8">
-              <button
-                onClick={handleEmail}
-                className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 hover:from-blue-600/30 hover:to-cyan-600/30 border border-cyan-500/30 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 group shadow-[0_0_20px_rgba(6,182,212,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.2)]"
-              >
-                <div className="p-1.5 rounded-full bg-cyan-500/10 group-hover:bg-cyan-500/20 transition-colors">
-                  <Mail className="text-cyan-400 group-hover:text-cyan-300" size={20} />
-                </div>
-                <span className="text-slate-200 font-medium tracking-wide">
-                  整理成郵件草稿
-                </span>
-              </button>
-            </div>
+
           </>
         ) : (
           <div className="text-center text-red-400 py-20">
