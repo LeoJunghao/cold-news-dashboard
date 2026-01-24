@@ -72,9 +72,9 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
     };
 
     return (
-        <main className="min-h-screen p-4 md:p-8 bg-[#050b14] text-slate-200">
+        <div className="min-h-screen bg-[#050b14] text-slate-200">
             {/* Header */}
-            <header className="sticky top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 px-6 py-3 flex flex-row justify-between items-center shadow-lg backdrop-blur-xl bg-slate-900/90 mb-6">
+            <header className="sticky top-0 z-50 w-full border-b border-cyan-500/20 bg-slate-900/95 backdrop-blur-xl px-4 md:px-8 py-3 flex flex-row justify-between items-center shadow-lg shadow-cyan-900/10">
                 <div className="flex items-center gap-3">
                     <div className="p-1.5 rounded-lg bg-cyan-950/50 border border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.1)]">
                         <Zap className="text-cyan-400" size={20} />
@@ -110,139 +110,141 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                 </div>
             </header>
 
-            {/* Macro Pulse Section */}
-            <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="max-w-7xl mx-auto mb-6 px-4 md:px-0"
-            >
-                <div className="flex flex-wrap md:flex-nowrap gap-3 md:gap-6 justify-center items-center py-3 bg-cyan-950/20 border-y border-cyan-500/20 backdrop-blur-sm">
-                    <MacroItem
-                        label="US 10Y Yield"
-                        value={`${stats?.us10Y?.toFixed(2)}%`}
-                        trend={stats?.us10Y && stats.us10Y > 4.2 ? 'up' : 'neutral'}
-                        loading={loading}
-                    />
-                    <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
-                    <MacroItem
-                        label="Dollar Index (DXY)"
-                        value={stats?.dollarIndex?.toFixed(2) || '---'}
-                        trend={stats?.dollarIndex && stats.dollarIndex > 103 ? 'up' : 'down'}
-                        loading={loading}
-                    />
-                    <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
-                    <MacroItem
-                        label="Brent Crude Oil"
-                        value={`$${stats?.brentCrude?.toFixed(2)}`}
-                        trend={stats?.brentCrude && stats.brentCrude > 85 ? 'up' : 'neutral'}
-                        loading={loading}
-                    />
-                    <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
-                    <MacroItem
-                        label="Gold Price"
-                        value={`$${stats?.goldPrice?.toFixed(1) || '---'}`}
-                        trend={stats?.goldPrice && stats.goldPrice > 2000 ? 'up' : 'neutral'}
-                        loading={loading}
-                    />
-                </div>
-            </motion.div>
-
-            {/* Gauges Section */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="max-w-7xl mx-auto mb-8"
-            >
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Gauge
-                        label="Fear & Greed (Stock)"
-                        value={stats?.stockFnG || 50}
-                        loading={loading && !stats}
-                    />
-                    <Gauge
-                        label="VIX Volatility"
-                        value={stats?.vix || 20}
-                        max={60}
-                        unit=""
-                        loading={loading && !stats}
-                    />
-                    <Gauge
-                        label="Crypto Fear & Greed"
-                        value={stats?.cryptoFnG || 50}
-                        loading={loading && !stats}
-                    />
-                    <Gauge
-                        label="Gold Sentiment"
-                        value={stats?.goldSentiment || 50}
-                        loading={loading && !stats}
-                    />
-                </div>
-            </motion.div>
-
-            {/* Main Content */}
-            <div className="max-w-7xl mx-auto space-y-8 pb-12">
-                <section id="us">
-                    <NewsSection title="美國財經焦點" items={data.us} color="cyan" />
-                </section>
-                <section id="intl">
-                    <NewsSection title="國際財經視野" items={data.intl} color="blue" />
-                </section>
-                <section id="geo">
-                    <NewsSection title="全球地緣政治與軍事" items={data.geo} color="purple" />
-                </section>
-                <section id="tw">
-                    <NewsSection title="台灣財經要聞" items={data.tw} color="cyan" />
-                </section>
-                <section id="crypto">
-                    <NewsSection title="加密貨幣快訊" items={data.crypto} color="emerald" />
-                </section>
-
-                {/* Total Summary Report */}
+            <main className="p-4 md:p-8">
+                {/* Macro Pulse Section */}
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    className="mt-12 mb-8 mx-4 md:mx-0"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="max-w-7xl mx-auto mb-6 px-4 md:px-0"
                 >
-                    <div className="glass-panel p-6 rounded-2xl border border-cyan-500/30 bg-gradient-to-b from-slate-900/90 to-slate-950/90 shadow-[0_0_30px_rgba(6,182,212,0.15)] relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl -translate-y-32 translate-x-32 group-hover:bg-cyan-500/20 transition-all duration-1000" />
-                        <div className="absolute bottom-0 left-0 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl translate-y-20 -translate-x-20" />
-
-                        <div className="relative z-10">
-                            <div className="flex items-center gap-3 mb-4">
-                                <TrendingUp className="text-cyan-400" size={24} />
-                                <h2 className="text-xl font-bold text-slate-100 tracking-wide">
-                                    市場總結分析報告
-                                </h2>
-                            </div>
-
-                            <div className="prose prose-invert max-w-none">
-                                <p className="text-slate-300 leading-relaxed text-justify font-sans text-sm tracking-wide">
-                                    {(() => {
-                                        const topUS = data.us[0]?.title || "市場波動";
-                                        const topIntl = data.intl[0]?.title || "全球局勢";
-                                        const topGeo = data.geo[0]?.title || "地緣動態";
-                                        const topTw = data.tw[0]?.title || "台股表現";
-
-                                        return `市場分析報告顯示，今日全球金融體系持續受到多重宏觀因素交互影響，投資氛圍呈現謹慎觀望。首要焦點集中於美國市場，「${topUS}」消息一出即引發市場關注。在國際板塊方面，「${topIntl}」亦成為重要風向球。此外，地緣政治風險未曾消退，「${topGeo}」局勢發展仍具不確定性。回歸台灣市場，「${topTw}」議題直接牽動產業鏈敏感神經。建議投資人密切監控後續效應，適度調控資金部位。`;
-                                    })()}
-                                </p>
-                            </div>
-
-                            <div className="mt-4 flex items-center justify-end gap-2">
-                                <span className="text-xs text-slate-500 font-mono">AI Generated Analysis • Top Stories</span>
-                                <Cpu size={14} className="text-cyan-500/50" />
-                            </div>
-                        </div>
+                    <div className="flex flex-wrap md:flex-nowrap gap-3 md:gap-6 justify-center items-center py-3 bg-emerald-500/10 border-y border-emerald-500/20 backdrop-blur-sm">
+                        <MacroItem
+                            label="US 10Y Yield"
+                            value={`${stats?.us10Y?.toFixed(2)}%`}
+                            trend={stats?.us10Y && stats.us10Y > 4.2 ? 'up' : 'neutral'}
+                            loading={loading}
+                        />
+                        <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
+                        <MacroItem
+                            label="Dollar Index (DXY)"
+                            value={stats?.dollarIndex?.toFixed(2) || '---'}
+                            trend={stats?.dollarIndex && stats.dollarIndex > 103 ? 'up' : 'down'}
+                            loading={loading}
+                        />
+                        <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
+                        <MacroItem
+                            label="Brent Crude Oil"
+                            value={`$${stats?.brentCrude?.toFixed(2)}`}
+                            trend={stats?.brentCrude && stats.brentCrude > 85 ? 'up' : 'neutral'}
+                            loading={loading}
+                        />
+                        <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
+                        <MacroItem
+                            label="Gold Price"
+                            value={`$${stats?.goldPrice?.toFixed(1) || '---'}`}
+                            trend={stats?.goldPrice && stats.goldPrice > 2000 ? 'up' : 'neutral'}
+                            loading={loading}
+                        />
                     </div>
                 </motion.div>
 
-                <div className="text-center text-slate-600 text-sm font-mono mt-10 pt-10 border-t border-slate-800">
-                    Sources: CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News • Priority &lt; 6h • Excludes {'>'} 24h
+                {/* Gauges Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                    className="max-w-7xl mx-auto mb-8 p-6 rounded-2xl bg-blue-500/10 border border-blue-500/20"
+                >
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <Gauge
+                            label="Fear & Greed (Stock)"
+                            value={stats?.stockFnG || 50}
+                            loading={loading && !stats}
+                        />
+                        <Gauge
+                            label="VIX Volatility"
+                            value={stats?.vix || 20}
+                            max={60}
+                            unit=""
+                            loading={loading && !stats}
+                        />
+                        <Gauge
+                            label="Crypto Fear & Greed"
+                            value={stats?.cryptoFnG || 50}
+                            loading={loading && !stats}
+                        />
+                        <Gauge
+                            label="Gold Sentiment"
+                            value={stats?.goldSentiment || 50}
+                            loading={loading && !stats}
+                        />
+                    </div>
+                </motion.div>
+
+                {/* Main Content */}
+                <div className="max-w-7xl mx-auto space-y-8 pb-12">
+                    <section id="us">
+                        <NewsSection title="美國財經焦點" items={data.us} color="cyan" />
+                    </section>
+                    <section id="intl">
+                        <NewsSection title="國際財經視野" items={data.intl} color="blue" />
+                    </section>
+                    <section id="geo">
+                        <NewsSection title="全球地緣政治與軍事" items={data.geo} color="purple" />
+                    </section>
+                    <section id="tw">
+                        <NewsSection title="台灣財經要聞" items={data.tw} color="cyan" />
+                    </section>
+                    <section id="crypto">
+                        <NewsSection title="加密貨幣快訊" items={data.crypto} color="emerald" />
+                    </section>
+
+                    {/* Total Summary Report */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        className="mt-12 mb-8 mx-4 md:mx-0"
+                    >
+                        <div className="glass-panel p-6 rounded-2xl border border-cyan-500/30 bg-gradient-to-b from-slate-900/90 to-slate-950/90 shadow-[0_0_30px_rgba(6,182,212,0.15)] relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl -translate-y-32 translate-x-32 group-hover:bg-cyan-500/20 transition-all duration-1000" />
+                            <div className="absolute bottom-0 left-0 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl translate-y-20 -translate-x-20" />
+
+                            <div className="relative z-10">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <TrendingUp className="text-cyan-400" size={24} />
+                                    <h2 className="text-xl font-bold text-slate-100 tracking-wide">
+                                        市場總結分析報告
+                                    </h2>
+                                </div>
+
+                                <div className="prose prose-invert max-w-none">
+                                    <p className="text-slate-300 leading-relaxed text-justify font-sans text-sm tracking-wide">
+                                        {(() => {
+                                            const topUS = data.us[0]?.title || "市場波動";
+                                            const topIntl = data.intl[0]?.title || "全球局勢";
+                                            const topGeo = data.geo[0]?.title || "地緣動態";
+                                            const topTw = data.tw[0]?.title || "台股表現";
+
+                                            return `市場分析報告顯示，今日全球金融體系持續受到多重宏觀因素交互影響，投資氛圍呈現謹慎觀望。首要焦點集中於美國市場，「${topUS}」消息一出即引發市場關注。在國際板塊方面，「${topIntl}」亦成為重要風向球。此外，地緣政治風險未曾消退，「${topGeo}」局勢發展仍具不確定性。回歸台灣市場，「${topTw}」議題直接牽動產業鏈敏感神經。建議投資人密切監控後續效應，適度調控資金部位。`;
+                                        })()}
+                                    </p>
+                                </div>
+
+                                <div className="mt-4 flex items-center justify-end gap-2">
+                                    <span className="text-xs text-slate-500 font-mono">AI Generated Analysis • Top Stories</span>
+                                    <Cpu size={14} className="text-cyan-500/50" />
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    <div className="text-center text-slate-600 text-sm font-mono mt-10 pt-10 border-t border-slate-800">
+                        Sources: CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News • Priority &lt; 6h • Excludes {'>'} 24h
+                    </div>
                 </div>
-            </div>
-        </main>
+            </main>
+        </div>
     );
 }
 
