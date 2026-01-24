@@ -1,5 +1,10 @@
 import { parseStringPromise } from 'xml2js';
 
+export interface MarketQuote {
+    price: number;
+    changePercent: number;
+}
+
 export interface MarketStats {
     vix: number;
     stockFnG: number;
@@ -10,6 +15,11 @@ export interface MarketStats {
     dollarIndex: number;
     brentCrude: number;
     goldPrice: number;
+    // Major Indices
+    sox: MarketQuote;
+    sp500: MarketQuote;
+    dji: MarketQuote;
+    twii: MarketQuote;
 }
 
 // Generic helper to fetch price from Yahoo Finance Chart API
@@ -23,6 +33,24 @@ async function getYahooPrice(symbol: string, fallback: number): Promise<number> 
     } catch (e) {
         console.error(`Fetch Error for ${symbol}`, e);
         return fallback;
+    }
+}
+
+// Helper to fetch full quote (price + change%)
+async function getYahooQuote(symbol: string): Promise<MarketQuote> {
+    try {
+        const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`, { next: { revalidate: 300 } });
+        if (!res.ok) return { price: 0, changePercent: 0 };
+        const data = await res.json();
+        const meta = data.chart?.result?.[0]?.meta;
+        const price = meta?.regularMarketPrice || 0;
+        const prevClose = meta?.chartPreviousClose || price;
+        const changePercent = prevClose ? ((price - prevClose) / prevClose) * 100 : 0;
+
+        return { price, changePercent };
+    } catch (e) {
+        console.error(`Quote Fetch Error for ${symbol}`, e);
+        return { price: 0, changePercent: 0 };
     }
 }
 
@@ -50,6 +78,12 @@ async function getBrentCrude(): Promise<number> {
 async function getGoldPrice(): Promise<number> {
     return getYahooPrice('GC=F', 2000);
 }
+
+// Indices Fetchers
+async function getSOX(): Promise<MarketQuote> { return getYahooQuote('%5ESOX'); }
+async function getSP500(): Promise<MarketQuote> { return getYahooQuote('%5EGSPC'); }
+async function getDJI(): Promise<MarketQuote> { return getYahooQuote('%5EDJI'); }
+async function getTWII(): Promise<MarketQuote> { return getYahooQuote('%5ETWII'); }
 
 // 2. Crypto Fear & Greed from Alternative.me
 async function getCryptoFnG(): Promise<number> {
@@ -106,13 +140,17 @@ async function getGoldSentiment(): Promise<number> {
 
 export async function getMarketStats(): Promise<MarketStats> {
     // Parallel fetch
-    const [vix, cryptoData, us10Y, dxy, brent, goldPrice] = await Promise.all([
+    const [vix, cryptoData, us10Y, dxy, brent, goldPrice, sox, sp500, dji, twii] = await Promise.all([
         getVIX(),
         getCryptoFnG(),
         getUS10Y(),
         getDollarIndex(),
         getBrentCrude(),
-        getGoldPrice()
+        getGoldPrice(),
+        getSOX(),
+        getSP500(),
+        getDJI(),
+        getTWII()
     ]);
 
     // Dependent stats
@@ -129,6 +167,10 @@ export async function getMarketStats(): Promise<MarketStats> {
         us10Y,
         dollarIndex: dxy,
         brentCrude: brent,
-        goldPrice
+        goldPrice,
+        sox,
+        sp500,
+        dji,
+        twii
     };
 }

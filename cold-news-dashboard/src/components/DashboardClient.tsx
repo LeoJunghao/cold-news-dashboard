@@ -5,7 +5,7 @@ import { RefreshCw, Zap, Copy, TrendingUp, Cpu } from 'lucide-react';
 import { NewsSection } from '@/components/NewsSection';
 import { Gauge } from '@/components/Gauge';
 import type { NewsItem } from '@/lib/news';
-import type { MarketStats } from '@/lib/stats';
+import type { MarketStats, MarketQuote } from '@/lib/stats';
 import { formatNewsForClipboard, cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
@@ -80,8 +80,8 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                         <Zap className="text-cyan-400" size={20} />
                     </div>
                     <div className="flex flex-col">
-                        <h1 className="text-lg font-bold text-yellow-400 font-mono tracking-tighter drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]">
-                            即時財經新聞摘要
+                        <h1 className="text-xl font-bold text-yellow-400 font-mono tracking-tighter drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]">
+                            財經總評
                         </h1>
                         <p className="text-[10px] text-slate-500 font-mono tracking-wider flex items-center gap-2">
                             {lastUpdated.toLocaleString('zh-TW', { hour12: false })}
@@ -143,6 +143,37 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                             label="Gold Price"
                             value={`$${stats?.goldPrice?.toFixed(1) || '---'}`}
                             trend={stats?.goldPrice && stats.goldPrice > 2000 ? 'up' : 'neutral'}
+                            loading={loading}
+                        />
+                    </div>
+                </motion.div>
+
+                {/* Major Indices Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05 }}
+                    className="max-w-7xl mx-auto mb-6 px-4 md:px-0"
+                >
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <IndexItem
+                            label="費城半導體"
+                            data={stats?.sox}
+                            loading={loading}
+                        />
+                        <IndexItem
+                            label="S&P 500"
+                            data={stats?.sp500}
+                            loading={loading}
+                        />
+                        <IndexItem
+                            label="道瓊工業"
+                            data={stats?.dji}
+                            loading={loading}
+                        />
+                        <IndexItem
+                            label="台股加權"
+                            data={stats?.twii}
                             loading={loading}
                         />
                     </div>
@@ -211,28 +242,59 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                             <div className="absolute bottom-0 left-0 w-40 h-40 bg-blue-500/10 rounded-full blur-2xl translate-y-20 -translate-x-20" />
 
                             <div className="relative z-10">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <TrendingUp className="text-cyan-400" size={24} />
-                                    <h2 className="text-xl font-bold text-slate-100 tracking-wide">
-                                        市場總結分析報告
-                                    </h2>
+                                <div className="flex items-center justify-between mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <TrendingUp className="text-cyan-400" size={24} />
+                                        <h2 className="text-xl font-bold text-slate-100 tracking-wide">
+                                            市場總結分析報告
+                                        </h2>
+                                    </div>
+                                    {(() => {
+                                        const score = stats?.stockFnG ?? 50;
+                                        let sentiment = "中性觀望";
+                                        let sentimentColor = "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
+
+                                        if (score >= 60) {
+                                            sentiment = "樂觀偏多";
+                                            sentimentColor = "bg-red-500/20 text-red-300 border-red-500/30";
+                                        } else if (score <= 40) {
+                                            sentiment = "悲觀保守";
+                                            sentimentColor = "bg-green-500/20 text-green-300 border-green-500/30";
+                                        }
+
+                                        return (
+                                            <div className={cn("px-4 py-1.5 rounded-full border text-sm font-bold tracking-wider shadow-[0_0_15px_rgba(0,0,0,0.3)] backdrop-blur-md", sentimentColor)}>
+                                                {sentiment}
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
 
                                 <div className="prose prose-invert max-w-none">
-                                    <p className="text-slate-300 leading-relaxed text-justify font-sans text-sm tracking-wide">
+                                    <p className="text-slate-300 leading-8 text-justify font-sans text-sm tracking-wide whitespace-pre-line">
                                         {(() => {
-                                            const topUS = data.us[0]?.title || "市場波動";
-                                            const topIntl = data.intl[0]?.title || "全球局勢";
-                                            const topGeo = data.geo[0]?.title || "地緣動態";
-                                            const topTw = data.tw[0]?.title || "台股表現";
+                                            if (!stats || !data.us.length) return "正在整合全球金融數據...";
 
-                                            return `市場分析報告顯示，今日全球金融體系持續受到多重宏觀因素交互影響，投資氛圍呈現謹慎觀望。首要焦點集中於美國市場，「${topUS}」消息一出即引發市場關注。在國際板塊方面，「${topIntl}」亦成為重要風向球。此外，地緣政治風險未曾消退，「${topGeo}」局勢發展仍具不確定性。回歸台灣市場，「${topTw}」議題直接牽動產業鏈敏感神經。建議投資人密切監控後續效應，適度調控資金部位。`;
+                                            const score = stats.stockFnG;
+                                            const usNews = data.us.slice(0, 3).map(n => n.title);
+                                            const intlNews = data.intl.slice(0, 2).map(n => n.title);
+                                            const geoNews = data.geo[0]?.title || "無重大地緣政治消息";
+                                            const twNews = data.tw.slice(0, 2).map(n => n.title);
+
+                                            // Dynamic Intro
+                                            let tone = "市場情緒目前在多空之間拉鋸，投資人對於未來經濟前景看法分歧。";
+                                            if (score >= 60) tone = "受惠於經濟數據強勁與企業獲利預期上修，全球市場瀰漫樂觀氛圍，多頭攻勢凌厲。";
+                                            else if (score <= 40) tone = "在全球經濟放緩疑慮與地緣政治風險升溫的雙重打擊下，市場避險情緒高漲，空方掌控大局。";
+
+                                            const macro = `根據最新即時數據，美國恐懼與貪婪指數來到 ${score}，VIX 波動率指數報 ${stats.vix?.toFixed(2)}。此外，美元指數報 ${stats.dollarIndex?.toFixed(2)}，十年期公債殖利率維持 ${stats.us10Y?.toFixed(2)}% 水位，顯示宏觀資金面${stats.us10Y > 4.2 ? "持續緊縮，對風險資產評價構成壓力" : "相對平穩，有利資金在此尋求避風港"}。`;
+
+                                            return `【綜合分析摘要】\n${tone}${macro}\n\n在核心市場動態方面，美股市場正聚焦於數個關鍵議題：首先，「${usNews[0]}」顯示出市場對此高度敏感；其次，「${usNews[1]}」亦牽動板塊資金輪動；「${usNews[2]}」則進一步影響了投資人對產業前景的預期。這些因素共同交織出當前美股的波動格局。\n\n放眼國際視野，${intlNews.length > 0 ? `「${intlNews[0]}」成為了今日全球關注焦點` : ""}，${intlNews[1] ? `而「${intlNews[1]}」的消息更引發了對於區域經濟穩定的討論` : ""}。在地緣政治風險方面，我們必須密切關注「${geoNews}」的後續效應，這可能對大宗商品價格帶來潛在衝擊。\n\n回歸台灣市場，台股與國際股市連動性深，近日「${twNews[0]}」與「${twNews[1]}」兩大議題成為內資與外資法人操作的重要參考依據，將直接影響短期指數表現。\n\n【投資建議與展望】\n綜合上述數據與新聞分析，目前市場${score >= 60 ? "多頭氣勢強勁，建議投資人可順勢操作，挑選基本面優良之個股佈局，惟需警惕短線乖離過大風險。" : score <= 40 ? "空方氣焰囂張，建議採取防禦性操作，提高現金部位比重，耐心等待底部確立訊號出現。" : "處於震盪整理階段，多空方向尚未明朗。建議採取區間操作策略，逢高獲利了結，逢低試單佈局，並透過嚴格執行停損以控制風險。"}此外，加密貨幣市場情緒（指數 ${stats.cryptoFnG}）亦可作為風險偏好之領先指標參考。`;
                                         })()}
                                     </p>
                                 </div>
 
-                                <div className="mt-4 flex items-center justify-end gap-2">
-                                    <span className="text-xs text-slate-500 font-mono">AI Generated Analysis • Top Stories</span>
+                                <div className="mt-6 flex items-center justify-end gap-2 border-t border-slate-800/50 pt-4">
+                                    <span className="text-xs text-slate-500 font-mono">AI Generated Analysis • Comprehensive Report</span>
                                     <Cpu size={14} className="text-cyan-500/50" />
                                 </div>
                             </div>
@@ -243,7 +305,34 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                         Sources: CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News • Priority &lt; 6h • Excludes {'>'} 24h
                     </div>
                 </div>
-            </main>
+            </main >
+        </div >
+    );
+}
+
+function IndexItem({ label, data, loading }: { label: string, data?: MarketQuote, loading: boolean }) {
+    if (loading || !data) return (
+        <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-slate-900/50 border border-slate-800 animate-pulse h-[80px]">
+            <div className="h-3 w-16 bg-slate-800 rounded mb-2"></div>
+            <div className="h-5 w-24 bg-slate-800/50 rounded"></div>
+        </div>
+    );
+
+    const isUp = data.changePercent >= 0;
+    const colorClass = isUp ? 'text-red-400' : 'text-green-400';
+    const bgClass = isUp ? 'bg-red-500/5 border-red-500/10' : 'bg-green-500/5 border-green-500/10';
+
+    return (
+        <div className={cn("flex flex-col items-center justify-center p-3 rounded-xl border backdrop-blur-sm transition-all hover:bg-opacity-80 hover:scale-[1.02]", bgClass)}>
+            <span className="text-xs font-bold text-slate-400 tracking-wider mb-1">{label}</span>
+            <div className="flex items-baseline gap-2">
+                <span className="text-lg font-bold font-mono text-slate-100">
+                    {data.price.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                </span>
+                <span className={cn("text-xs font-mono font-bold flex items-center", colorClass)}>
+                    {isUp ? '▲' : '▼'} {Math.abs(data.changePercent).toFixed(2)}%
+                </span>
+            </div>
         </div>
     );
 }
