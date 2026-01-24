@@ -320,16 +320,19 @@ function IndexItem({ label, data, loading }: { label: string, data?: MarketQuote
 
     const isUp = data.changePercent >= 0;
     const colorClass = isUp ? 'text-red-400' : 'text-green-400';
-    const bgClass = isUp ? 'bg-red-500/5 border-red-500/10' : 'bg-green-500/5 border-green-500/10';
+    // Cold light purple style as requested
+    const bgClass = 'bg-purple-500/10 border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]';
 
     return (
         <div className={cn("flex flex-col items-center justify-center p-3 rounded-xl border backdrop-blur-sm transition-all hover:bg-opacity-80 hover:scale-[1.02]", bgClass)}>
-            <span className="text-xs font-bold text-slate-400 tracking-wider mb-1">{label}</span>
+            <span className="text-[10px] font-bold text-purple-300/80 tracking-wider mb-1 uppercase">{label}</span>
             <div className="flex items-baseline gap-2">
-                <span className="text-lg font-bold font-mono text-slate-100">
+                {/* Font size reduced by ~40% (text-lg -> text-sm/base) */}
+                <span className="text-sm font-bold font-mono text-slate-100 drop-shadow-sm">
                     {data.price.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                 </span>
-                <span className={cn("text-xs font-mono font-bold flex items-center", colorClass)}>
+                {/* Font size reduced (text-xs -> text-[10px]) */}
+                <span className={cn("text-[10px] font-mono font-bold flex items-center", colorClass)}>
                     {isUp ? '▲' : '▼'} {Math.abs(data.changePercent).toFixed(2)}%
                 </span>
             </div>
