@@ -30,16 +30,16 @@ export function formatNewsForClipboard(data: {
     if (stats) {
         macroContext = `
 【關鍵總經數據】
-- 美國10年期公債殖利率: ${stats.us10Y.toFixed(2)}% (全球資產定價之錨)
-- 美元指數 (DXY): ${stats.dollarIndex.toFixed(2)} (資金流向指標)
-- 布蘭特原油: $${stats.brentCrude.toFixed(2)} (通膨領先指標)
-- 黃金價格: $${stats.goldPrice?.toFixed(1) || '---'} (避險情緒)
+- 美國10年期公債殖利率: ${stats.us10Y.price.toFixed(2)}% (Change: ${stats.us10Y.changePercent >= 0 ? '+' : ''}${stats.us10Y.changePercent.toFixed(2)}%)
+- 美元指數 (DXY): ${stats.dollarIndex.price.toFixed(2)} (Change: ${stats.dollarIndex.changePercent >= 0 ? '+' : ''}${stats.dollarIndex.changePercent.toFixed(2)}%)
+- 布蘭特原油: $${stats.brentCrude.price.toFixed(2)} (Change: ${stats.brentCrude.changePercent >= 0 ? '+' : ''}${stats.brentCrude.changePercent.toFixed(2)}%)
+- 黃金價格: $${stats.goldPrice?.price.toFixed(1) || '---'} (Change: ${stats.goldPrice?.changePercent !== undefined ? (stats.goldPrice.changePercent >= 0 ? '+' : '') + stats.goldPrice.changePercent.toFixed(2) + '%' : '---'})
 - VIX 恐慌指數: ${stats.vix.toFixed(2)}
 - 股市貪婪恐懼: ${stats.stockFnG}
 `;
     }
 
-    const marketSummary = `市場分析報告顯示，今日全球金融體系持續受到多重宏觀因素交互影響。${macroContext ? `\n參考數據：美債殖利率 ${stats?.us10Y.toFixed(2)}% | 美元指數 ${stats?.dollarIndex.toFixed(2)}\n` : ''}首要焦點集中於美國市場，「${topUS}」消息一出即引發市場關注。在國際板塊方面，「${topIntl}」亦成為重要風向球。此外，地緣政治風險未曾消退，「${topGeo}」局勢發展仍具不確定性。回歸台灣市場，「${topTw}」議題直接牽動產業鏈敏感神經。`;
+    const marketSummary = `市場分析報告顯示，今日全球金融體系持續受到多重宏觀因素交互影響。${macroContext ? `\n參考數據：美債殖利率 ${stats?.us10Y.price.toFixed(2)}% | 美元指數 ${stats?.dollarIndex.price.toFixed(2)}\n` : ''}首要焦點集中於美國市場，「${topUS}」消息一出即引發市場關注。在國際板塊方面，「${topIntl}」亦成為重要風向球。此外，地緣政治風險未曾消退，「${topGeo}」局勢發展仍具不確定性。回歸台灣市場，「${topTw}」議題直接牽動產業鏈敏感神經。`;
 
     const subject = `財經新聞摘要 - ${formatDate(new Date())}`;
     let body = `${marketSummary}\n\n`;
