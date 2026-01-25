@@ -12,9 +12,13 @@ export interface MarketStats {
     goldSentiment: number;
     // New Macro Indicators
     us10Y: number;
+    us2Y: number;      // New
     dollarIndex: number;
     brentCrude: number;
     goldPrice: number;
+    copper: number;    // New
+    bdi: number;       // New
+    crb: number;       // New
     // Major Indices
     sox: MarketQuote;
     sp500: MarketQuote;
@@ -64,6 +68,12 @@ async function getUS10Y(): Promise<number> {
     return getYahooPrice('%5ETNX', 4.0);
 }
 
+// New: US 2Y Treasury Bond (ZT=F Futures or Proxy)
+async function getUS2Y(): Promise<number> {
+    // ZT=F is 2-Year Note Futures (Price)
+    return getYahooPrice('ZT=F', 102);
+}
+
 // New: Dollar Index (DX-Y.NYB)
 async function getDollarIndex(): Promise<number> {
     return getYahooPrice('DX-Y.NYB', 100);
@@ -77,6 +87,21 @@ async function getBrentCrude(): Promise<number> {
 // New: Gold Price (GC=F)
 async function getGoldPrice(): Promise<number> {
     return getYahooPrice('GC=F', 2000);
+}
+
+// New: Copper Price (HG=F)
+async function getCopper(): Promise<number> {
+    return getYahooPrice('HG=F', 3.8);
+}
+
+// New: BDI Shipping (BDRY ETF Proxy)
+async function getBDI(): Promise<number> {
+    return getYahooPrice('BDRY', 6.0);
+}
+
+// New: CRB Index (^TRCCRB)
+async function getCRB(): Promise<number> {
+    return getYahooPrice('%5ETRCCRB', 270);
 }
 
 // Indices Fetchers
@@ -140,13 +165,17 @@ async function getGoldSentiment(): Promise<number> {
 
 export async function getMarketStats(): Promise<MarketStats> {
     // Parallel fetch
-    const [vix, cryptoData, us10Y, dxy, brent, goldPrice, sox, sp500, dji, twii] = await Promise.all([
+    const [vix, cryptoData, us10Y, us2Y, dxy, brent, goldPrice, copper, bdi, crb, sox, sp500, dji, twii] = await Promise.all([
         getVIX(),
         getCryptoFnG(),
         getUS10Y(),
+        getUS2Y(),
         getDollarIndex(),
         getBrentCrude(),
         getGoldPrice(),
+        getCopper(),
+        getBDI(),
+        getCRB(),
         getSOX(),
         getSP500(),
         getDJI(),
@@ -165,9 +194,13 @@ export async function getMarketStats(): Promise<MarketStats> {
         cryptoFnG: cryptoData,
         goldSentiment: goldData,
         us10Y,
+        us2Y,
         dollarIndex: dxy,
         brentCrude: brent,
         goldPrice,
+        copper,
+        bdi,
+        crb,
         sox,
         sp500,
         dji,

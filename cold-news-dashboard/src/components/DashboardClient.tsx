@@ -117,32 +117,60 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                     animate={{ opacity: 1, y: 0 }}
                     className="max-w-7xl mx-auto mb-6 px-4 md:px-0"
                 >
-                    <div className="flex flex-wrap md:flex-nowrap gap-3 md:gap-6 justify-center items-center py-3 bg-emerald-500/10 border-y border-emerald-500/20 backdrop-blur-sm">
+                    <div className="flex flex-wrap xl:flex-nowrap gap-4 justify-center items-center py-4 bg-emerald-500/10 border-y border-emerald-500/20 backdrop-blur-sm">
                         <MacroItem
-                            label="美國 10 年公債"
+                            label="美國 2年公債"
+                            value={stats?.us2Y ? (stats.us2Y > 20 ? `$${stats.us2Y.toFixed(2)}` : `${stats.us2Y.toFixed(2)}%`) : '---'}
+                            trend={stats?.us2Y && stats.us2Y > 103 ? 'up' : 'neutral'}
+                            loading={loading}
+                        />
+                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
+                        <MacroItem
+                            label="美國 10年公債"
                             value={`${stats?.us10Y?.toFixed(2)}%`}
                             trend={stats?.us10Y && stats.us10Y > 4.2 ? 'up' : 'neutral'}
                             loading={loading}
                         />
-                        <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
+                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
                             label="美元指數"
                             value={stats?.dollarIndex?.toFixed(2) || '---'}
                             trend={stats?.dollarIndex && stats.dollarIndex > 103 ? 'up' : 'down'}
                             loading={loading}
                         />
-                        <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
+                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
                             label="布蘭特原油"
                             value={`$${stats?.brentCrude?.toFixed(2)}`}
                             trend={stats?.brentCrude && stats.brentCrude > 85 ? 'up' : 'neutral'}
                             loading={loading}
                         />
-                        <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
+                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
                             label="黃金價格"
                             value={`$${stats?.goldPrice?.toFixed(1) || '---'}`}
                             trend={stats?.goldPrice && stats.goldPrice > 2000 ? 'up' : 'neutral'}
+                            loading={loading}
+                        />
+                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
+                        <MacroItem
+                            label="銅貨價格"
+                            value={`$${stats?.copper?.toFixed(2) || '---'}`}
+                            trend={stats?.copper && stats.copper > 3.8 ? 'up' : 'neutral'}
+                            loading={loading}
+                        />
+                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
+                        <MacroItem
+                            label="BDI航運"
+                            value={`$${stats?.bdi?.toFixed(2) || '---'}`}
+                            trend={stats?.bdi && stats.bdi > 6 ? 'up' : 'neutral'}
+                            loading={loading}
+                        />
+                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
+                        <MacroItem
+                            label="CRB指數"
+                            value={`${stats?.crb?.toFixed(2) || '---'}`}
+                            trend={stats?.crb && stats.crb > 270 ? 'up' : 'neutral'}
                             loading={loading}
                         />
                     </div>
