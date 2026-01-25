@@ -61,10 +61,10 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ summary: text });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error generating summary:', error);
         return NextResponse.json(
-            { error: 'Failed to generate summary' },
+            { error: error.message || 'Failed to generate summary' },
             { status: 500 }
         );
     }

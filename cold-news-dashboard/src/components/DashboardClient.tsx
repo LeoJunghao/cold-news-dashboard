@@ -42,11 +42,11 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                 setAiSummary(data.summary);
             } else if (data.error) {
                 console.error("AI Summary Error:", data.error);
-                setAiSummary("自動分析暫時無法使用，請檢查 GEMINI_API_KEY 設定。");
+                setAiSummary(`自動分析失敗: ${data.error} (請檢查 API Key 或額度)`);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to generate summary", error);
-            setAiSummary("連線錯誤，無法產生分析報告。");
+            setAiSummary(`連線錯誤: ${error.message || "無法連接伺服器"}`);
         } finally {
             setGeneratingSummary(false);
         }
