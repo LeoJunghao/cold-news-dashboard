@@ -154,7 +154,8 @@ async function getStockFnG(currentVIX: number): Promise<number> {
         if (res.ok) {
             const data = await res.json();
             const today = data.fear_and_greed?.score;
-            if (today) return Math.round(today);
+            // User requested 2 decimal places, so valid float is needed.
+            if (today !== undefined) return Number(today);
         }
     } catch (e) {
         // Silently fail to fallback

@@ -88,7 +88,7 @@ export function Gauge({ value, min = 0, max = 100, label, unit = "", loading = f
 
             <div className="mt-1 flex flex-col items-center">
                 <div className="text-lg font-bold font-mono text-yellow-50 tracking-tighter drop-shadow-md leading-none">
-                    {loading ? '--' : value.toFixed(1)}
+                    {loading ? '--' : value.toFixed(2)}
                     <span className="text-[9px] ml-0.5 opacity-60 text-yellow-200/50 font-sans">{unit}</span>
                 </div>
                 <div className={cn("text-[9px] mt-0.5 font-mono uppercase tracking-wider", stateColorClass)}>
