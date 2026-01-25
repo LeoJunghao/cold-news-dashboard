@@ -58,6 +58,27 @@ async function getYahooQuote(symbol: string): Promise<MarketQuote> {
     }
 }
 
+// Helper to fetch from CNBC (better for US Yields & BDI)
+async function getCNBCPrice(symbol: string, fallback: number): Promise<number> {
+    try {
+        const res = await fetch(`https://quote.cnbc.com/quote-html-webservice/quote.htm?partnerId=2&requestMethod=quick&exthrs=1&noform=1&fund=1&output=json&symbols=${symbol}`, { next: { revalidate: 300 } });
+        if (!res.ok) return fallback;
+        const text = await res.text();
+        // CNBC sometimes returns JSONP-like or varying formats, but efficient cleaning:
+        const data = JSON.parse(text);
+        const quote = data.QuickQuoteResult?.QuickQuote;
+
+        // Handle array or single object
+        const target = Array.isArray(quote) ? quote[0] : quote;
+        const last = target?.last;
+
+        return last ? parseFloat(last) : fallback;
+    } catch (e) {
+        console.error(`CNBC Fetch Error for ${symbol}`, e);
+        return fallback;
+    }
+}
+
 // 1. VIX
 async function getVIX(): Promise<number> {
     return getYahooPrice('%5EVIX', 20);
@@ -68,10 +89,9 @@ async function getUS10Y(): Promise<number> {
     return getYahooPrice('%5ETNX', 4.0);
 }
 
-// New: US 2Y Treasury Bond (ZT=F Futures or Proxy)
+// New: US 2Y Treasury Bond (Source: CNBC US2Y)
 async function getUS2Y(): Promise<number> {
-    // ZT=F is 2-Year Note Futures (Price)
-    return getYahooPrice('ZT=F', 102);
+    return getCNBCPrice('US2Y', 4.0);
 }
 
 // New: Dollar Index (DX-Y.NYB)
@@ -94,9 +114,9 @@ async function getCopper(): Promise<number> {
     return getYahooPrice('HG=F', 3.8);
 }
 
-// New: BDI Shipping (BDRY ETF Proxy)
+// New: BDI Shipping (Source: CNBC .BADI)
 async function getBDI(): Promise<number> {
-    return getYahooPrice('BDRY', 6.0);
+    return getCNBCPrice('.BADI', 1500);
 }
 
 // New: CRB Index (^TRCCRB)
