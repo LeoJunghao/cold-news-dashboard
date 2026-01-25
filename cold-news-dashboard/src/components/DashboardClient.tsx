@@ -26,6 +26,31 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
     const [stats, setStats] = useState<MarketStats | null>(initialStats);
     const [loading, setLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState<Date>(new Date(lastUpdatedStr));
+    const [aiSummary, setAiSummary] = useState<string>("");
+    const [generatingSummary, setGeneratingSummary] = useState(false);
+
+    const generateSummary = async (news: any, marketStats: any) => {
+        setGeneratingSummary(true);
+        try {
+            const res = await fetch('/api/summary', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ news, stats: marketStats })
+            });
+            const data = await res.json();
+            if (data.summary) {
+                setAiSummary(data.summary);
+            } else if (data.error) {
+                console.error("AI Summary Error:", data.error);
+                setAiSummary("自動分析暫時無法使用，請檢查 GEMINI_API_KEY 設定。");
+            }
+        } catch (error) {
+            console.error("Failed to generate summary", error);
+            setAiSummary("連線錯誤，無法產生分析報告。");
+        } finally {
+            setGeneratingSummary(false);
+        }
+    };
 
     const fetchData = useCallback(async (isForceRefresh = false) => {
         setLoading(true);
@@ -39,6 +64,7 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                 tw: [],
                 crypto: []
             });
+            setAiSummary(""); // Clear previous summary
         }
         try {
             const forceQuery = isForceRefresh ? '&force=true' : '';
@@ -55,11 +81,21 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                 setData(newsJson);
                 setStats(statsJson);
                 setLastUpdated(new Date());
+
+                // Trigger AI Summary Generation
+                generateSummary(newsJson, statsJson);
             }
         } catch (err) {
             console.error(err);
         } finally {
             setLoading(false);
+        }
+    }, []);
+
+    // Load initial summary if data exists but summary is empty
+    useEffect(() => {
+        if (!aiSummary && initialData.us.length > 0 && initialStats) {
+            generateSummary(initialData, initialStats);
         }
     }, []);
 
@@ -307,23 +343,16 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                                 <div className="prose prose-invert max-w-none">
                                     <p className="text-slate-300 leading-8 text-justify font-sans text-sm tracking-wide whitespace-pre-line">
                                         {(() => {
-                                            if (loading) return "正在重新掃描市場數據並生成最新分析報告...";
-                                            if (!stats || !data.us.length) return "正在整合全球金融數據...";
+                                            if (generatingSummary) return (
+                                                <span className="flex items-center gap-2 animate-pulse text-cyan-400">
+                                                    <Cpu className="animate-spin" size={16} />
+                                                    AI 正在即時分析全球市場數據，請稍候...
+                                                </span>
+                                            );
 
-                                            const score = stats.stockFnG;
-                                            const usNews = data.us.slice(0, 3).map(n => n.title);
-                                            const intlNews = data.intl.slice(0, 2).map(n => n.title);
-                                            const geoNews = data.geo[0]?.title || "無重大地緣政治消息";
-                                            const twNews = data.tw.slice(0, 2).map(n => n.title);
+                                            if (!aiSummary) return "請點擊重新整理以生成最新分析報告。";
 
-                                            // Dynamic Intro
-                                            let tone = "市場情緒目前在多空之間拉鋸，投資人對於未來經濟前景看法分歧。";
-                                            if (score >= 60) tone = "受惠於經濟數據強勁與企業獲利預期上修，全球市場瀰漫樂觀氛圍，多頭攻勢凌厲。";
-                                            else if (score <= 40) tone = "在全球經濟放緩疑慮與地緣政治風險升溫的雙重打擊下，市場避險情緒高漲，空方掌控大局。";
-
-                                            const macro = `根據最新即時數據，美國恐懼與貪婪指數來到 ${score}，VIX 波動率指數報 ${stats.vix?.toFixed(2)}。此外，美元指數報 ${stats.dollarIndex?.price.toFixed(2)}，十年期公債殖利率維持 ${stats.us10Y?.price.toFixed(2)}% 水位，顯示宏觀資金面${stats.us10Y?.price > 4.2 ? "持續緊縮，對風險資產評價構成壓力" : "相對平穩，有利資金在此尋求避風港"}。`;
-
-                                            return `【綜合分析摘要】\n${tone}${macro}\n\n在核心市場動態方面，美股市場正聚焦於數個關鍵議題：首先，「${usNews[0]}」顯示出市場對此高度敏感；其次，「${usNews[1]}」亦牽動板塊資金輪動；「${usNews[2]}」則進一步影響了投資人對產業前景的預期。這些因素共同交織出當前美股的波動格局。\n\n放眼國際視野，${intlNews.length > 0 ? `「${intlNews[0]}」成為了今日全球關注焦點` : ""}，${intlNews[1] ? `而「${intlNews[1]}」的消息更引發了對於區域經濟穩定的討論` : ""}。在地緣政治風險方面，我們必須密切關注「${geoNews}」的後續效應，這可能對大宗商品價格帶來潛在衝擊。\n\n回歸台灣市場，台股與國際股市連動性深，近日「${twNews[0]}」與「${twNews[1]}」兩大議題成為內資與外資法人操作的重要參考依據，將直接影響短期指數表現。\n\n【投資建議與展望】\n綜合上述數據與新聞分析，目前市場${score >= 60 ? "多頭氣勢強勁，建議投資人可順勢操作，挑選基本面優良之個股佈局，惟需警惕短線乖離過大風險。" : score <= 40 ? "空方氣焰囂張，建議採取防禦性操作，提高現金部位比重，耐心等待底部確立訊號出現。" : "處於震盪整理階段，多空方向尚未明朗。建議採取區間操作策略，逢高獲利了結，逢低試單佈局，並透過嚴格執行停損以控制風險。"}此外，加密貨幣市場情緒（指數 ${stats.cryptoFnG}）亦可作為風險偏好之領先指標參考。`;
+                                            return aiSummary;
                                         })()}
                                     </p>
                                 </div>
