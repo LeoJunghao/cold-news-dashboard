@@ -120,57 +120,57 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                     <div className="flex flex-wrap xl:flex-nowrap gap-4 justify-center items-center py-4 bg-emerald-500/10 border-y border-emerald-500/20 backdrop-blur-sm">
                         <MacroItem
                             label="美國 2年公債"
-                            value={stats?.us2Y ? (stats.us2Y > 20 ? `$${stats.us2Y.toFixed(2)}` : `${stats.us2Y.toFixed(2)}%`) : '---'}
-                            trend={stats?.us2Y && stats.us2Y > 103 ? 'up' : 'neutral'}
+                            value={stats?.us2Y ? (stats.us2Y.price > 20 ? `$${stats.us2Y.price.toFixed(2)}` : `${stats.us2Y.price.toFixed(2)}%`) : '---'}
+                            changePercent={stats?.us2Y?.changePercent}
                             loading={loading}
                         />
                         <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
                             label="美國 10年公債"
-                            value={`${stats?.us10Y?.toFixed(2)}%`}
-                            trend={stats?.us10Y && stats.us10Y > 4.2 ? 'up' : 'neutral'}
+                            value={`${stats?.us10Y?.price.toFixed(2)}%`}
+                            changePercent={stats?.us10Y?.changePercent}
                             loading={loading}
                         />
                         <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
                             label="美元指數"
-                            value={stats?.dollarIndex?.toFixed(2) || '---'}
-                            trend={stats?.dollarIndex && stats.dollarIndex > 103 ? 'up' : 'down'}
+                            value={stats?.dollarIndex?.price.toFixed(2) || '---'}
+                            changePercent={stats?.dollarIndex?.changePercent}
                             loading={loading}
                         />
                         <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
                             label="布蘭特原油"
-                            value={`$${stats?.brentCrude?.toFixed(2)}`}
-                            trend={stats?.brentCrude && stats.brentCrude > 85 ? 'up' : 'neutral'}
+                            value={`$${stats?.brentCrude?.price.toFixed(2)}`}
+                            changePercent={stats?.brentCrude?.changePercent}
                             loading={loading}
                         />
                         <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
                             label="黃金價格"
-                            value={`$${stats?.goldPrice?.toFixed(1) || '---'}`}
-                            trend={stats?.goldPrice && stats.goldPrice > 2000 ? 'up' : 'neutral'}
+                            value={`$${stats?.goldPrice?.price.toFixed(1) || '---'}`}
+                            changePercent={stats?.goldPrice?.changePercent}
                             loading={loading}
                         />
                         <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
                             label="銅貨價格"
-                            value={`$${stats?.copper?.toFixed(2) || '---'}`}
-                            trend={stats?.copper && stats.copper > 3.8 ? 'up' : 'neutral'}
+                            value={`$${stats?.copper?.price.toFixed(2) || '---'}`}
+                            changePercent={stats?.copper?.changePercent}
                             loading={loading}
                         />
                         <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
                             label="BDI航運"
-                            value={`$${stats?.bdi?.toFixed(2) || '---'}`}
-                            trend={stats?.bdi && stats.bdi > 6 ? 'up' : 'neutral'}
+                            value={`${stats?.bdi?.price.toFixed(0) || '---'}`}
+                            changePercent={stats?.bdi?.changePercent}
                             loading={loading}
                         />
                         <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
                             label="CRB指數"
-                            value={`${stats?.crb?.toFixed(2) || '---'}`}
-                            trend={stats?.crb && stats.crb > 270 ? 'up' : 'neutral'}
+                            value={`${stats?.crb?.price.toFixed(2) || '---'}`}
+                            changePercent={stats?.crb?.changePercent}
                             loading={loading}
                         />
                     </div>
@@ -314,7 +314,7 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                                             if (score >= 60) tone = "受惠於經濟數據強勁與企業獲利預期上修，全球市場瀰漫樂觀氛圍，多頭攻勢凌厲。";
                                             else if (score <= 40) tone = "在全球經濟放緩疑慮與地緣政治風險升溫的雙重打擊下，市場避險情緒高漲，空方掌控大局。";
 
-                                            const macro = `根據最新即時數據，美國恐懼與貪婪指數來到 ${score}，VIX 波動率指數報 ${stats.vix?.toFixed(2)}。此外，美元指數報 ${stats.dollarIndex?.toFixed(2)}，十年期公債殖利率維持 ${stats.us10Y?.toFixed(2)}% 水位，顯示宏觀資金面${stats.us10Y > 4.2 ? "持續緊縮，對風險資產評價構成壓力" : "相對平穩，有利資金在此尋求避風港"}。`;
+                                            const macro = `根據最新即時數據，美國恐懼與貪婪指數來到 ${score}，VIX 波動率指數報 ${stats.vix?.toFixed(2)}。此外，美元指數報 ${stats.dollarIndex?.price.toFixed(2)}，十年期公債殖利率維持 ${stats.us10Y?.price.toFixed(2)}% 水位，顯示宏觀資金面${stats.us10Y?.price > 4.2 ? "持續緊縮，對風險資產評價構成壓力" : "相對平穩，有利資金在此尋求避風港"}。`;
 
                                             return `【綜合分析摘要】\n${tone}${macro}\n\n在核心市場動態方面，美股市場正聚焦於數個關鍵議題：首先，「${usNews[0]}」顯示出市場對此高度敏感；其次，「${usNews[1]}」亦牽動板塊資金輪動；「${usNews[2]}」則進一步影響了投資人對產業前景的預期。這些因素共同交織出當前美股的波動格局。\n\n放眼國際視野，${intlNews.length > 0 ? `「${intlNews[0]}」成為了今日全球關注焦點` : ""}，${intlNews[1] ? `而「${intlNews[1]}」的消息更引發了對於區域經濟穩定的討論` : ""}。在地緣政治風險方面，我們必須密切關注「${geoNews}」的後續效應，這可能對大宗商品價格帶來潛在衝擊。\n\n回歸台灣市場，台股與國際股市連動性深，近日「${twNews[0]}」與「${twNews[1]}」兩大議題成為內資與外資法人操作的重要參考依據，將直接影響短期指數表現。\n\n【投資建議與展望】\n綜合上述數據與新聞分析，目前市場${score >= 60 ? "多頭氣勢強勁，建議投資人可順勢操作，挑選基本面優良之個股佈局，惟需警惕短線乖離過大風險。" : score <= 40 ? "空方氣焰囂張，建議採取防禦性操作，提高現金部位比重，耐心等待底部確立訊號出現。" : "處於震盪整理階段，多空方向尚未明朗。建議採取區間操作策略，逢高獲利了結，逢低試單佈局，並透過嚴格執行停損以控制風險。"}此外，加密貨幣市場情緒（指數 ${stats.cryptoFnG}）亦可作為風險偏好之領先指標參考。`;
                                         })()}
@@ -368,7 +368,7 @@ function IndexItem({ label, data, loading }: { label: string, data?: MarketQuote
     );
 }
 
-function MacroItem({ label, value, trend, loading }: { label: string, value: string, trend: 'up' | 'down' | 'neutral', loading: boolean }) {
+function MacroItem({ label, value, changePercent, loading }: { label: string, value: string, changePercent?: number, loading: boolean }) {
     if (loading) return (
         <div className="flex flex-col items-center min-w-[120px] animate-pulse">
             <div className="h-3 w-20 bg-slate-800 rounded mb-1"></div>
@@ -376,14 +376,20 @@ function MacroItem({ label, value, trend, loading }: { label: string, value: str
         </div>
     );
 
-    const standardColor = trend === 'up' ? 'text-red-400' : trend === 'down' ? 'text-green-400' : 'text-slate-200'; // Taiwan logic: Red=Up
+    const isUp = (changePercent || 0) >= 0;
+    const trendColor = isUp ? 'text-red-400' : 'text-green-400';
 
     return (
         <div className="flex flex-col items-center min-w-[120px]">
             <span className="text-[10px] font-bold font-mono text-purple-400 uppercase tracking-tighter mb-1 text-center flex items-center drop-shadow-[0_0_3px_rgba(168,85,247,0.5)]">{label}</span>
-            <span className={cn("text-lg font-bold font-mono tracking-tight", standardColor)}>
+            <span className="text-lg font-bold font-mono tracking-tight text-slate-200">
                 {value}
             </span>
+            {changePercent !== undefined && (
+                <span className={cn("text-[10px] font-bold font-mono", trendColor)}>
+                    {isUp ? '▲' : '▼'} {Math.abs(changePercent).toFixed(2)}%
+                </span>
+            )}
         </div>
     );
 }

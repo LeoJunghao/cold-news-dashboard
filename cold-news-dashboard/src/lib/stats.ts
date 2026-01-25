@@ -11,14 +11,14 @@ export interface MarketStats {
     cryptoFnG: number;
     goldSentiment: number;
     // New Macro Indicators
-    us10Y: number;
-    us2Y: number;      // New
-    dollarIndex: number;
-    brentCrude: number;
-    goldPrice: number;
-    copper: number;    // New
-    bdi: number;       // New
-    crb: number;       // New
+    us10Y: MarketQuote;
+    us2Y: MarketQuote;      // New
+    dollarIndex: MarketQuote;
+    brentCrude: MarketQuote;
+    goldPrice: MarketQuote;
+    copper: MarketQuote;    // New
+    bdi: MarketQuote;       // New
+    crb: MarketQuote;       // New
     // Major Indices
     sox: MarketQuote;
     sp500: MarketQuote;
@@ -59,10 +59,11 @@ async function getYahooQuote(symbol: string): Promise<MarketQuote> {
 }
 
 // Helper to fetch from CNBC (better for US Yields & BDI)
-async function getCNBCPrice(symbol: string, fallback: number): Promise<number> {
+// Helper to fetch from CNBC (better for US Yields & BDI)
+async function getCNBCPrice(symbol: string, fallback: number): Promise<MarketQuote> {
     try {
         const res = await fetch(`https://quote.cnbc.com/quote-html-webservice/quote.htm?partnerId=2&requestMethod=quick&exthrs=1&noform=1&fund=1&output=json&symbols=${symbol}`, { next: { revalidate: 300 } });
-        if (!res.ok) return fallback;
+        if (!res.ok) return { price: fallback, changePercent: 0 };
         const text = await res.text();
         // CNBC sometimes returns JSONP-like or varying formats, but efficient cleaning:
         const data = JSON.parse(text);
@@ -70,12 +71,13 @@ async function getCNBCPrice(symbol: string, fallback: number): Promise<number> {
 
         // Handle array or single object
         const target = Array.isArray(quote) ? quote[0] : quote;
-        const last = target?.last;
+        const last = target?.last ? parseFloat(target.last) : fallback;
+        const changePct = target?.change_pct ? parseFloat(target.change_pct) : 0;
 
-        return last ? parseFloat(last) : fallback;
+        return { price: last, changePercent: changePct };
     } catch (e) {
         console.error(`CNBC Fetch Error for ${symbol}`, e);
-        return fallback;
+        return { price: fallback, changePercent: 0 };
     }
 }
 
@@ -85,43 +87,43 @@ async function getVIX(): Promise<number> {
 }
 
 // New: US 10Y Treasury Yield (^TNX)
-async function getUS10Y(): Promise<number> {
-    return getYahooPrice('%5ETNX', 4.0);
+async function getUS10Y(): Promise<MarketQuote> {
+    return getYahooQuote('%5ETNX');
 }
 
 // New: US 2Y Treasury Bond (Source: CNBC US2Y)
-async function getUS2Y(): Promise<number> {
+async function getUS2Y(): Promise<MarketQuote> {
     return getCNBCPrice('US2Y', 4.0);
 }
 
 // New: Dollar Index (DX-Y.NYB)
-async function getDollarIndex(): Promise<number> {
-    return getYahooPrice('DX-Y.NYB', 100);
+async function getDollarIndex(): Promise<MarketQuote> {
+    return getYahooQuote('DX-Y.NYB');
 }
 
 // New: Brent Crude Oil (BZ=F)
-async function getBrentCrude(): Promise<number> {
-    return getYahooPrice('BZ=F', 80);
+async function getBrentCrude(): Promise<MarketQuote> {
+    return getYahooQuote('BZ=F');
 }
 
 // New: Gold Price (GC=F)
-async function getGoldPrice(): Promise<number> {
-    return getYahooPrice('GC=F', 2000);
+async function getGoldPrice(): Promise<MarketQuote> {
+    return getYahooQuote('GC=F');
 }
 
 // New: Copper Price (HG=F)
-async function getCopper(): Promise<number> {
-    return getYahooPrice('HG=F', 3.8);
+async function getCopper(): Promise<MarketQuote> {
+    return getYahooQuote('HG=F');
 }
 
 // New: BDI Shipping (Source: CNBC .BADI)
-async function getBDI(): Promise<number> {
+async function getBDI(): Promise<MarketQuote> {
     return getCNBCPrice('.BADI', 1500);
 }
 
 // New: CRB Index (^TRCCRB)
-async function getCRB(): Promise<number> {
-    return getYahooPrice('%5ETRCCRB', 270);
+async function getCRB(): Promise<MarketQuote> {
+    return getYahooQuote('%5ETRCCRB');
 }
 
 // Indices Fetchers
