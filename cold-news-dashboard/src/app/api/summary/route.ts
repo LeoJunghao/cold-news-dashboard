@@ -53,9 +53,8 @@ export async function POST(request: Request) {
 
         // Initialize Gemini
         const genAI = new GoogleGenerativeAI(apiKey);
-        // Fallback to 'gemini-pro' if 1.5-flash issues persist, or specific version 'gemini-1.5-flash-latest'
-        // Error was: "models/gemini-1.5-flash is not found". Trying 'gemini-pro' as it is the stable GA model.
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        // Using 'gemini-2.0-flash' as confirmed available in User's model list
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
