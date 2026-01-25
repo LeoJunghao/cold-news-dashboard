@@ -125,9 +125,21 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                             loading={loading}
                         />
                         <MacroItem
+                            label="美國 2年公債"
+                            value={stats?.us2Y?.price ? `${stats.us2Y.price.toFixed(2)}%` : '---'}
+                            changePercent={stats?.us2Y?.changePercent}
+                            loading={loading}
+                        />
+                        <MacroItem
                             label="美元指數"
                             value={stats?.dollarIndex?.price.toFixed(2) || '---'}
                             changePercent={stats?.dollarIndex?.changePercent}
+                            loading={loading}
+                        />
+                        <MacroItem
+                            label="比特幣"
+                            value={`$${stats?.bitcoin?.price.toLocaleString(undefined, { maximumFractionDigits: 0 }) || '---'}`}
+                            changePercent={stats?.bitcoin?.changePercent}
                             loading={loading}
                         />
                         <MacroItem
@@ -140,6 +152,18 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                             label="黃金價格"
                             value={`$${stats?.goldPrice?.price.toFixed(1) || '---'}`}
                             changePercent={stats?.goldPrice?.changePercent}
+                            loading={loading}
+                        />
+                        <MacroItem
+                            label="BDI 航運"
+                            value={`${stats?.bdi?.price.toFixed(0) || '---'}`}
+                            changePercent={stats?.bdi?.changePercent}
+                            loading={loading}
+                        />
+                        <MacroItem
+                            label="CRB 指數"
+                            value={`${stats?.crb?.price.toFixed(2) || '---'}`}
+                            changePercent={stats?.crb?.changePercent}
                             loading={loading}
                         />
                     </div>

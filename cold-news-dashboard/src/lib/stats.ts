@@ -12,13 +12,13 @@ export interface MarketStats {
     goldSentiment: number;
     // New Macro Indicators
     us10Y: MarketQuote;
-    us2Y: MarketQuote;      // New
+    us2Y: MarketQuote;
     dollarIndex: MarketQuote;
     brentCrude: MarketQuote;
     goldPrice: MarketQuote;
-    copper: MarketQuote;    // New
-    bdi: MarketQuote;       // New
-    crb: MarketQuote;       // New
+    bitcoin: MarketQuote;   // New
+    bdi: MarketQuote;
+    crb: MarketQuote;
     // Major Indices
     sox: MarketQuote;
     sp500: MarketQuote;
@@ -59,17 +59,13 @@ async function getYahooQuote(symbol: string): Promise<MarketQuote> {
 }
 
 // Helper to fetch from CNBC (better for US Yields & BDI)
-// Helper to fetch from CNBC (better for US Yields & BDI)
 async function getCNBCPrice(symbol: string, fallback: number): Promise<MarketQuote> {
     try {
         const res = await fetch(`https://quote.cnbc.com/quote-html-webservice/quote.htm?partnerId=2&requestMethod=quick&exthrs=1&noform=1&fund=1&output=json&symbols=${symbol}`, { next: { revalidate: 300 } });
         if (!res.ok) return { price: fallback, changePercent: 0 };
         const text = await res.text();
-        // CNBC sometimes returns JSONP-like or varying formats, but efficient cleaning:
         const data = JSON.parse(text);
         const quote = data.QuickQuoteResult?.QuickQuote;
-
-        // Handle array or single object
         const target = Array.isArray(quote) ? quote[0] : quote;
         const last = target?.last ? parseFloat(target.last) : fallback;
         const changePct = target?.change_pct ? parseFloat(target.change_pct) : 0;
@@ -91,7 +87,9 @@ async function getUS10Y(): Promise<MarketQuote> {
     return getYahooQuote('%5ETNX');
 }
 
-// New: US 2Y Treasury Bond (Source: CNBC US2Y)
+// New: US 2Y Treasury Bond (Source: Yahoo ^IRX is 13 week, ^FVX is 5 year. ^TU is not available directly on public yahoo easily. Let's try CNBC or use ^UST2Y if available, but ^TNX is standard. 
+// Standard Yahoo symbols for treasuries: ^TNX (10y), ^TYX (30y), ^FVX (5y), ^IRX (13w). 2Y is harder. 
+// We can use CNBC for US2Y which we already have helper for.
 async function getUS2Y(): Promise<MarketQuote> {
     return getCNBCPrice('US2Y', 4.0);
 }
@@ -111,9 +109,9 @@ async function getGoldPrice(): Promise<MarketQuote> {
     return getYahooQuote('GC=F');
 }
 
-// New: Copper Price (HG=F)
-async function getCopper(): Promise<MarketQuote> {
-    return getYahooQuote('HG=F');
+// New: Bitcoin Price (BTC-USD)
+async function getBitcoinPrice(): Promise<MarketQuote> {
+    return getYahooQuote('BTC-USD');
 }
 
 // New: BDI Shipping (Source: CNBC .BADI)
@@ -121,9 +119,11 @@ async function getBDI(): Promise<MarketQuote> {
     return getCNBCPrice('.BADI', 1500);
 }
 
-// New: CRB Index (^TRCCRB)
+// New: CRB Index (^TRCCRB - Thomson Reuters / CoreCommodity CRB Index)
 async function getCRB(): Promise<MarketQuote> {
-    return getYahooQuote('%5ETRCCRB');
+    // Yahoo often uses ^TRCCRB or similar. Let's try ^TRCCRB.
+    // Sometimes it's CL=F for oil, but CRB index itself is specific.
+    return getYahooQuote('^TRCCRB');
 }
 
 // Indices Fetchers
@@ -187,7 +187,7 @@ async function getGoldSentiment(): Promise<number> {
 
 export async function getMarketStats(): Promise<MarketStats> {
     // Parallel fetch
-    const [vix, cryptoData, us10Y, us2Y, dxy, brent, goldPrice, copper, bdi, crb, sox, sp500, dji, twii] = await Promise.all([
+    const [vix, cryptoData, us10Y, us2Y, dxy, brent, goldPrice, bitcoin, bdi, crb, sox, sp500, dji, twii] = await Promise.all([
         getVIX(),
         getCryptoFnG(),
         getUS10Y(),
@@ -195,7 +195,7 @@ export async function getMarketStats(): Promise<MarketStats> {
         getDollarIndex(),
         getBrentCrude(),
         getGoldPrice(),
-        getCopper(),
+        getBitcoinPrice(),
         getBDI(),
         getCRB(),
         getSOX(),
@@ -220,7 +220,7 @@ export async function getMarketStats(): Promise<MarketStats> {
         dollarIndex: dxy,
         brentCrude: brent,
         goldPrice,
-        copper,
+        bitcoin,
         bdi,
         crb,
         sox,
