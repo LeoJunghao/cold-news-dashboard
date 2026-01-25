@@ -17,19 +17,23 @@ export function Gauge({ value, min = 0, max = 100, label, unit = "", loading = f
     let stateText = getLabelForValue(label, value, !!loading);
     let stateColorClass = "text-yellow-200/70";
 
-    if (label.includes("Greed")) {
-        if (value < 25) { strokeColor = "#ef4444"; stateColorClass = "text-red-400"; }
-        else if (value < 45) { strokeColor = "#fb923c"; stateColorClass = "text-orange-300"; }
-        else if (value > 75) { strokeColor = "#22c55e"; stateColorClass = "text-green-400"; }
-        else if (value > 55) { strokeColor = "#34d399"; stateColorClass = "text-emerald-300"; }
-        else { strokeColor = "#fcd34d"; stateColorClass = "text-yellow-200/70"; }
-    } else if (label.includes("VIX")) {
-        if (value < 15) { strokeColor = "#22c55e"; stateColorClass = "text-green-400"; }
-        else if (value < 25) { strokeColor = "#fcd34d"; stateColorClass = "text-yellow-200/70"; }
-        else { strokeColor = "#ef4444"; stateColorClass = "text-red-400"; }
-    } else if (label.includes("Gold")) {
-        if (value > 60) { strokeColor = "#eab308"; stateColorClass = "text-yellow-400"; }
-        else if (value < 40) { strokeColor = "#94a3b8"; stateColorClass = "text-slate-400"; }
+    // Taiwan Stock Color Logic: Red = Up/Hot/Greed, Green = Down/Cold/Fear
+    if (label.includes("Greed") || label.includes("Sentiment") || label.includes("情緒") || label.includes("貪婪")) {
+        // 0-100 Scale: 0 = Extreme Fear (Green), 100 = Extreme Greed (Red)
+        if (value < 25) { strokeColor = "#22c55e"; stateColorClass = "text-green-400"; } // Extreme Fear -> Green (Bottom/Cold)
+        else if (value < 45) { strokeColor = "#34d399"; stateColorClass = "text-emerald-300"; } // Fear
+        else if (value > 75) { strokeColor = "#ef4444"; stateColorClass = "text-red-500"; } // Extreme Greed -> Red (Hot)
+        else if (value > 55) { strokeColor = "#f87171"; stateColorClass = "text-red-400"; } // Greed
+        else { strokeColor = "#fb923c"; stateColorClass = "text-orange-300"; } // Neutral -> Orange
+    } else if (label.includes("VIX") || label.includes("波動")) {
+        // VIX: Low = Bullish (Red/Good), High = Bearish (Green/Bad)
+        if (value < 15) { strokeColor = "#ef4444"; stateColorClass = "text-red-400"; } // Low VIX -> Red (Bullish)
+        else if (value < 25) { strokeColor = "#fb923c"; stateColorClass = "text-orange-300"; } // Normal
+        else { strokeColor = "#22c55e"; stateColorClass = "text-green-400"; } // High VIX -> Green (Bearish)
+    } else if (label.includes("Gold") || label.includes("黃金")) {
+        // Gold Sentiment: High = Bullish (Red)
+        if (value > 60) { strokeColor = "#ef4444"; stateColorClass = "text-red-400"; }
+        else if (value < 40) { strokeColor = "#22c55e"; stateColorClass = "text-green-400"; }
     }
 
     return (
@@ -95,16 +99,17 @@ export function Gauge({ value, min = 0, max = 100, label, unit = "", loading = f
     );
 }
 
-function getLabelForValue(type: string, val: number, loading: boolean): string {
+function getLabelForValue(label: string, val: number, loading: boolean): string {
     if (loading) return "LOADING";
-    if (type.includes("VIX")) {
+    if (label.includes("VIX") || label.includes("波動")) {
         if (val < 15) return "CALM";
         if (val < 25) return "NORMAL";
-        return "HIGH VOLATILITY";
+        return "HIGH VOLATILITY"; // Green in TW style = Bearish
     }
-    if (val < 25) return "EXTREME FEAR";
-    if (val < 45) return "FEAR";
+    // Fear & Greed
+    if (val < 25) return "EXTREME FEAR"; // Green
+    if (val < 45) return "FEAR"; // Green
     if (val < 55) return "NEUTRAL";
-    if (val < 75) return "GREED";
-    return "EXTREME GREED";
+    if (val < 75) return "GREED"; // Red
+    return "EXTREME GREED"; // Red
 }

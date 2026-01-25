@@ -117,60 +117,29 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                     animate={{ opacity: 1, y: 0 }}
                     className="max-w-7xl mx-auto mb-6 px-4 md:px-0"
                 >
-                    <div className="flex flex-wrap xl:flex-nowrap gap-4 justify-center items-center py-4 bg-emerald-500/10 border-y border-emerald-500/20 backdrop-blur-sm">
-                        <MacroItem
-                            label="美國 2年公債"
-                            value={stats?.us2Y ? (stats.us2Y.price > 20 ? `$${stats.us2Y.price.toFixed(2)}` : `${stats.us2Y.price.toFixed(2)}%`) : '---'}
-                            changePercent={stats?.us2Y?.changePercent}
-                            loading={loading}
-                        />
-                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-emerald-500/5 border-y border-emerald-500/20 backdrop-blur-sm">
                         <MacroItem
                             label="美國 10年公債"
-                            value={`${stats?.us10Y?.price.toFixed(2)}%`}
+                            value={stats?.us10Y?.price ? `${stats.us10Y.price.toFixed(2)}%` : '---'}
                             changePercent={stats?.us10Y?.changePercent}
                             loading={loading}
                         />
-                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
                             label="美元指數"
                             value={stats?.dollarIndex?.price.toFixed(2) || '---'}
                             changePercent={stats?.dollarIndex?.changePercent}
                             loading={loading}
                         />
-                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
                             label="布蘭特原油"
                             value={`$${stats?.brentCrude?.price.toFixed(2)}`}
                             changePercent={stats?.brentCrude?.changePercent}
                             loading={loading}
                         />
-                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
                             label="黃金價格"
                             value={`$${stats?.goldPrice?.price.toFixed(1) || '---'}`}
                             changePercent={stats?.goldPrice?.changePercent}
-                            loading={loading}
-                        />
-                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
-                        <MacroItem
-                            label="銅貨價格"
-                            value={`$${stats?.copper?.price.toFixed(2) || '---'}`}
-                            changePercent={stats?.copper?.changePercent}
-                            loading={loading}
-                        />
-                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
-                        <MacroItem
-                            label="BDI航運"
-                            value={`${stats?.bdi?.price.toFixed(0) || '---'}`}
-                            changePercent={stats?.bdi?.changePercent}
-                            loading={loading}
-                        />
-                        <div className="hidden xl:block w-px h-6 bg-cyan-500/20"></div>
-                        <MacroItem
-                            label="CRB指數"
-                            value={`${stats?.crb?.price.toFixed(2) || '---'}`}
-                            changePercent={stats?.crb?.changePercent}
                             loading={loading}
                         />
                     </div>
@@ -370,23 +339,26 @@ function IndexItem({ label, data, loading }: { label: string, data?: MarketQuote
 
 function MacroItem({ label, value, changePercent, loading }: { label: string, value: string, changePercent?: number, loading: boolean }) {
     if (loading) return (
-        <div className="flex flex-col items-center min-w-[120px] animate-pulse">
-            <div className="h-3 w-20 bg-slate-800 rounded mb-1"></div>
+        <div className="flex flex-col items-center justify-center p-3 rounded-lg border border-slate-700 bg-slate-900/50 animate-pulse h-[80px] w-full">
+            <div className="h-3 w-20 bg-slate-800 rounded mb-2"></div>
             <div className="h-5 w-16 bg-slate-800/50 rounded"></div>
         </div>
     );
 
     const isUp = (changePercent || 0) >= 0;
+    // Taiwan logic: Red = Up, Green = Down
     const trendColor = isUp ? 'text-red-400' : 'text-green-400';
 
     return (
-        <div className="flex flex-col items-center min-w-[120px]">
-            <span className="text-[10px] font-bold font-mono text-purple-400 uppercase tracking-tighter mb-1 text-center flex items-center drop-shadow-[0_0_3px_rgba(168,85,247,0.5)]">{label}</span>
-            <span className="text-lg font-bold font-mono tracking-tight text-slate-200">
+        <div className="flex flex-col items-center justify-center p-3 rounded-lg border border-cyan-500/20 bg-slate-900/40 hover:bg-slate-800/60 hover:border-cyan-500/40 transition-all group w-full">
+            <span className="text-[10px] font-bold font-mono text-purple-400 uppercase tracking-tighter mb-1.5 text-center flex items-center gap-1 drop-shadow-[0_0_3px_rgba(168,85,247,0.5)]">
+                {label}
+            </span>
+            <span className="text-xl font-bold font-mono tracking-tight text-slate-100 group-hover:text-white transition-colors">
                 {value}
             </span>
             {changePercent !== undefined && (
-                <span className={cn("text-[10px] font-bold font-mono", trendColor)}>
+                <span className={cn("text-[10px] font-bold font-mono mt-0.5", trendColor)}>
                     {isUp ? '▲' : '▼'} {Math.abs(changePercent).toFixed(2)}%
                 </span>
             )}
