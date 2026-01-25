@@ -52,13 +52,15 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
         }
     }, []);
 
-    // Auto-refresh every 5 minutes
+    // Auto-refresh removed per user request
+    /* 
     useEffect(() => {
         const interval = setInterval(() => {
             fetchData(false);
         }, 5 * 60 * 1000);
         return () => clearInterval(interval);
-    }, [fetchData]);
+    }, [fetchData]); 
+    */
 
     const handleCopy = () => {
         if (!data || !stats) return;
@@ -294,6 +296,7 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                                 <div className="prose prose-invert max-w-none">
                                     <p className="text-slate-300 leading-8 text-justify font-sans text-sm tracking-wide whitespace-pre-line">
                                         {(() => {
+                                            if (loading) return "正在重新掃描市場數據並生成最新分析報告...";
                                             if (!stats || !data.us.length) return "正在整合全球金融數據...";
 
                                             const score = stats.stockFnG;
