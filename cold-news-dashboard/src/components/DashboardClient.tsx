@@ -29,9 +29,16 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
 
     const fetchData = useCallback(async (isForceRefresh = false) => {
         setLoading(true);
-        // If force refresh, clear stats to force re-generation of summary
+        // If force refresh, clear all data to force visible regeneration
         if (isForceRefresh) {
             setStats(null);
+            setData({
+                us: [],
+                intl: [],
+                geo: [],
+                tw: [],
+                crypto: []
+            });
         }
         try {
             const forceQuery = isForceRefresh ? '&force=true' : '';
