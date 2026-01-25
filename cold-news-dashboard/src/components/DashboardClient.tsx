@@ -119,28 +119,28 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                 >
                     <div className="flex flex-wrap md:flex-nowrap gap-3 md:gap-6 justify-center items-center py-3 bg-emerald-500/10 border-y border-emerald-500/20 backdrop-blur-sm">
                         <MacroItem
-                            label="US 10Y Yield"
+                            label="美國 10 年公債"
                             value={`${stats?.us10Y?.toFixed(2)}%`}
                             trend={stats?.us10Y && stats.us10Y > 4.2 ? 'up' : 'neutral'}
                             loading={loading}
                         />
                         <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
-                            label="Dollar Index (DXY)"
+                            label="美元指數"
                             value={stats?.dollarIndex?.toFixed(2) || '---'}
                             trend={stats?.dollarIndex && stats.dollarIndex > 103 ? 'up' : 'down'}
                             loading={loading}
                         />
                         <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
-                            label="Brent Crude Oil"
+                            label="布蘭特原油"
                             value={`$${stats?.brentCrude?.toFixed(2)}`}
                             trend={stats?.brentCrude && stats.brentCrude > 85 ? 'up' : 'neutral'}
                             loading={loading}
                         />
                         <div className="hidden md:block w-px h-6 bg-cyan-500/20"></div>
                         <MacroItem
-                            label="Gold Price"
+                            label="黃金價格"
                             value={`$${stats?.goldPrice?.toFixed(1) || '---'}`}
                             trend={stats?.goldPrice && stats.goldPrice > 2000 ? 'up' : 'neutral'}
                             loading={loading}
@@ -188,24 +188,24 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                 >
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <Gauge
-                            label="Fear & Greed (Stock)"
+                            label="恐懼貪婪指數"
                             value={stats?.stockFnG || 50}
                             loading={loading && !stats}
                         />
                         <Gauge
-                            label="VIX Volatility"
+                            label="VIX 波動率"
                             value={stats?.vix || 20}
                             max={60}
                             unit=""
                             loading={loading && !stats}
                         />
                         <Gauge
-                            label="Crypto Fear & Greed"
+                            label="加密貨幣貪婪"
                             value={stats?.cryptoFnG || 50}
                             loading={loading && !stats}
                         />
                         <Gauge
-                            label="Gold Sentiment"
+                            label="黃金情緒"
                             value={stats?.goldSentiment || 50}
                             loading={loading && !stats}
                         />
@@ -302,7 +302,7 @@ export function DashboardClient({ initialData, initialStats, lastUpdatedStr }: D
                     </motion.div>
 
                     <div className="text-center text-slate-600 text-sm font-mono mt-10 pt-10 border-t border-slate-800">
-                        Sources: CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News • Priority &lt; 6h • Excludes {'>'} 24h
+                        Sources: CNN, CNBC, Anue, Yahoo Finance, WSJ, Google News • Priority &lt; 12h • Excludes {'>'} 24h
                     </div>
                 </div>
             </main >
